@@ -1,11 +1,7 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Login</title>
-  </head>
+  <%- include('./partials/head') %>
   <body>
-    <h1>Login</h1>
-
     <p id="message"></p>
 
     <form onsubmit="handleLogin(event)">
@@ -18,7 +14,6 @@
       <button type="submit">Login</button>
     </form>
 
-    <!-- Załaduj plik login.js -->
     <script src="/js/login.js"></script>
   </body>
 </html>
