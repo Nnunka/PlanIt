@@ -12,7 +12,7 @@ async function handleLogin(event) {
     body: JSON.stringify({ login, password }),
   });
 
-  const result = await response.json(); // odpowiedź z serwera
+  const result = await response.json(); //odpowiedź z serwera
 
   const messageElement = document.getElementById("message");
   if (result.success) {
