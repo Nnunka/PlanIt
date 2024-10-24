@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
 const path = require("path");
@@ -13,7 +14,7 @@ app.set("views", path.join(__dirname, "views"));
 //TRASY
 app.use(loginRoute);
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
