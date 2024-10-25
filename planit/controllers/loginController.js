@@ -10,7 +10,7 @@ exports.login = (req, res) => {
   }
 
   const query = `SELECT * FROM users WHERE user_login = ? AND user_password = ?`;
-  db.execute(query, [login, password], (err, results) => {
+  db.eexecut(query, [login, password], (err, results) => {
     if (err) {
       return res.status(500).json({ message: "Database error." });
     }

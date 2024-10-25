@@ -5,6 +5,7 @@ const path = require("path");
 const loginRoute = require("./routes/loginRoute");
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(path.join(__dirname, "public")));
 
