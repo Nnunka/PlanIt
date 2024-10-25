@@ -2,10 +2,11 @@ require("dotenv").config();
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const path = require("path");
+const app = express();
 
 const authRoutes = require("./routes/authRoutes");
 
-const app = express();
+app.use("/node_modules", express.static("node_modules"));
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
