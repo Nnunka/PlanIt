@@ -19,6 +19,7 @@ W katalogu głównym projektu stwórz plik .env i umieść w nim te dane:
     DB_USER=root
     DB_PASSWORD=4925
     DB_NAME=planit
+    JWT_SECRET=twój_tajny_klucz_jwt
 
 ## Tryb deweloperski (z automatycznym restartem serwera):
 
