@@ -7,6 +7,30 @@
   <body>
     <h1>Witaj, <%= user.login %>!</h1>
     <p>To jest Twoja strona główna.</p>
-    <p><a href="/logout">Wyloguj się</a></p>
+    <button id="logout-button">Wyloguj się</button>
+
+    <script>
+      document
+        .getElementById("logout-button")
+        .addEventListener("click", async function () {
+          try {
+            const response = await fetch("/logout", {
+              method: "GET",
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+              // Wylogowano pomyślnie, przekieruj na stronę logowania
+              window.location.href = "/";
+            } else {
+              alert(data.error || "Wystąpił błąd podczas wylogowywania.");
+            }
+          } catch (error) {
+            console.error("Błąd:", error);
+            alert("Wystąpił błąd podczas wylogowywania.");
+          }
+        });
+    </script>
   </body>
 </html>

@@ -3,29 +3,27 @@ const bcrypt = require("bcryptjs");
 const db = require("../config/db");
 const JWT_SECRET = process.env.JWT_SECRET;
 
-// controllers/authController.js
-
 exports.register = (req, res) => {
   const { login, password, email, name, surname } = req.body;
 
   if (!login || !password || !email || !name || !surname) {
-    return res.render("register", { error: "Wszystkie pola są wymagane." });
+    return res.status(400).json({ error: "Wszystkie pola są wymagane." });
   }
 
   const checkUserQuery = "SELECT * FROM users WHERE user_login = ?";
   db.query(checkUserQuery, [login], (err, results) => {
     if (err) {
       console.error("Błąd podczas sprawdzania użytkownika:", err);
-      return res.render("register", { error: "Wystąpił błąd serwera." });
+      return res.status(500).json({ error: "Wystąpił błąd serwera." });
     }
 
     if (results.length > 0) {
-      return res.render("register", { error: "Ten login jest już zajęty." });
+      return res.status(400).json({ error: "Ten login jest już zajęty." });
     } else {
       bcrypt.hash(password, 10, (err, hash) => {
         if (err) {
           console.error("Błąd podczas hashowania hasła:", err);
-          return res.render("register", { error: "Wystąpił błąd serwera." });
+          return res.status(500).json({ error: "Wystąpił błąd serwera." });
         }
 
         const query =
@@ -33,9 +31,11 @@ exports.register = (req, res) => {
         db.query(query, [login, hash, email, name, surname], (err, results) => {
           if (err) {
             console.error("Błąd podczas rejestracji użytkownika:", err);
-            return res.render("register", { error: "Wystąpił błąd serwera." });
+            return res.status(500).json({ error: "Wystąpił błąd serwera." });
           }
-          res.redirect("/"); // Przekierowanie na stronę logowania
+          res
+            .status(200)
+            .json({ success: true, message: "Rejestracja udana." });
         });
       });
     }
@@ -49,21 +49,19 @@ exports.login = (req, res) => {
   db.query(query, [login], (err, results) => {
     if (err) {
       console.error("Błąd podczas logowania:", err);
-      return res.send("Wystąpił błąd serwera.");
+      return res.status(500).json({ error: "Wystąpił błąd serwera." });
     }
 
     if (results.length > 0) {
       const user = results[0];
 
-      // Porównaj hasło
       bcrypt.compare(password, user.user_password, (err, isMatch) => {
         if (err) {
           console.error("Błąd podczas porównywania haseł:", err);
-          return res.send("Wystąpił błąd serwera.");
+          return res.status(500).json({ error: "Wystąpił błąd serwera." });
         }
 
         if (isMatch) {
-          // Generuj token JWT i zaloguj użytkownika
           const token = jwt.sign(
             { id: user.user_id, login: user.user_login },
             JWT_SECRET,
@@ -77,18 +75,23 @@ exports.login = (req, res) => {
             maxAge: 3600000,
           });
 
-          res.redirect("/main");
+          res.status(200).json({ success: true, message: "Logowanie udane." });
         } else {
-          res.send("Nieprawidłowy login lub hasło.");
+          res.status(400).json({ error: "Nieprawidłowy login lub hasło." });
         }
       });
     } else {
-      res.send("Nieprawidłowy login lub hasło.");
+      res.status(400).json({ error: "Nieprawidłowy login lub hasło." });
     }
   });
 };
 
 exports.logout = (req, res) => {
-  res.clearCookie("token");
-  res.redirect("/");
+  try {
+    res.clearCookie("token");
+    res.status(200).json({ success: true, message: "Wylogowano pomyślnie." });
+  } catch (error) {
+    console.error("Błąd podczas wylogowywania:", error);
+    res.status(500).json({ error: "Wystąpił błąd podczas wylogowywania." });
+  }
 };
