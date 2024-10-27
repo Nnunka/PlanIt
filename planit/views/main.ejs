@@ -4,6 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PlanIt</title>
+    <link
+      rel="stylesheet"
+      href="node_modules/bootstrap/dist/css/bootstrap.min.css"
+    />
   </head>
 
   <body>
@@ -11,28 +15,7 @@
     <p>To jest Twoja strona główna.</p>
     <button id="logout-button">Wyloguj się</button>
 
-    <script>
-      document
-        .getElementById("logout-button")
-        .addEventListener("click", async function () {
-          try {
-            const response = await fetch("/logout", {
-              method: "GET",
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-              // Wylogowano pomyślnie, przekieruj na stronę logowania
-              window.location.href = "/";
-            } else {
-              alert(data.error || "Wystąpił błąd podczas wylogowywania.");
-            }
-          } catch (error) {
-            console.error("Błąd:", error);
-            alert("Wystąpił błąd podczas wylogowywania.");
-          }
-        });
-    </script>
+    <script src="/js/logout.js"></script>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

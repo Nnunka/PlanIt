@@ -18,10 +18,8 @@ document
       const data = await response.json();
 
       if (response.ok) {
-        // Logowanie udane, przekieruj użytkownika
-        window.location.href = "/main";
+        window.location.href = "/main"; //przekierowanie po udanym logowaniu
       } else {
-        // Wyświetl komunikat o błędzie
         document.getElementById("error-message").innerText = data.error;
       }
     } catch (error) {

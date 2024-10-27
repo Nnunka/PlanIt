@@ -21,14 +21,9 @@ document
       const data = await response.json();
 
       if (response.ok) {
-        // Rejestracja udana, wyświetl komunikat sukcesu
         document.getElementById("success-message").innerText = data.message;
-        document.getElementById("error-message").innerText = "";
-        // Możesz również przekierować użytkownika na stronę logowania po kilku sekundach
       } else {
-        // Wyświetl komunikat o błędzie
         document.getElementById("error-message").innerText = data.error;
-        document.getElementById("success-message").innerText = "";
       }
     } catch (error) {
       console.error("Błąd:", error);
