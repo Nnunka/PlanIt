@@ -33,6 +33,9 @@ exports.register = (req, res) => {
             console.error("Błąd podczas rejestracji użytkownika:", err);
             return res.status(500).json({ error: "Wystąpił błąd serwera." });
           }
+
+          console.log("Zarejestrowano nowego użytkownika:", req.body);
+
           res
             .status(200)
             .json({ success: true, message: "Rejestracja udana." });
@@ -74,6 +77,8 @@ exports.login = (req, res) => {
             sameSite: "strict",
             maxAge: 3600000,
           });
+
+          console.log("Zalogowano użytkownika:", req.body);
 
           res.status(200).json({ success: true, message: "Logowanie udane." });
         } else {
