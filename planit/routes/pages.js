@@ -2,6 +2,7 @@ const express = require("express");
 const authenticateToken = require("../middleware/auth");
 const router = express.Router();
 const authController = require("../controllers/authController");
+const taskController = require("../controllers/taskController");
 
 //trasa do logowania
 router.get("/", (req, res) => {
@@ -26,5 +27,10 @@ router.get("/logout", authController.logout);
 router.get("/main", authenticateToken, (req, res) => {
   res.render("main", { user: req.user });
 });
+
+//////
+
+//trasa do pobierania listy zadań z bazy
+router.get("/tasks", authenticateToken, taskController.getTasks);
 
 module.exports = router;

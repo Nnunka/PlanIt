@@ -13,6 +13,45 @@
   <body>
     <%- include('partials/navbar') %>
 
+    <div class="container mt-4">
+      <h2>Twoja lista zadań</h2>
+      <div id="task-list" class="mt-3"></div>
+    </div>
+
+    <script>
+      async function fetchTasks() {
+        try {
+          const response = await fetch("/tasks");
+          const data = await response.json();
+          const tasks = data.tasks;
+
+          const taskList = document.getElementById("task-list");
+          taskList.innerHTML = ""; // Wyczyść kontener przed dodaniem zadań
+
+          tasks.forEach((task) => {
+            const taskItem = document.createElement("div");
+            taskItem.classList.add("task-item");
+
+            taskItem.innerHTML = `
+              <strong>ID zadania:</strong> ${task.task_id} <br />
+              <strong>Nazwa zadania:</strong> ${task.task_name} <br />
+              <strong>Opis:</strong> ${task.task_more || "Brak opisu"} <br />
+              <strong>Grupa:</strong> ${task.task_group || "Brak grupy"} <br />
+              <strong>Termin:</strong> ${task.task_end_date || "Brak daty"} ${
+              task.task_end_time || ""
+            }
+            `;
+
+            taskList.appendChild(taskItem);
+          });
+        } catch (error) {
+          console.error("Błąd pobierania zadań:", error);
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", fetchTasks);
+    </script>
+
     <script src="/js/logout.js"></script>
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   </body>
