@@ -4,7 +4,7 @@ const cookieParser = require("cookie-parser");
 const path = require("path");
 const app = express();
 
-const authRoutes = require("./routes/authRoutes");
+const pages = require("./routes/pages");
 
 app.use("/node_modules", express.static("node_modules"));
 app.use(express.static(path.join(__dirname, "public")));
@@ -16,7 +16,7 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 //TRASY
-app.use("/", authRoutes);
+app.use(pages);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {

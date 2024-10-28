@@ -25,9 +25,11 @@ document
 
       if (response.ok) {
         successMessage.innerText = data.message;
+        successMessage.style.display = "block";
         errorMessage.style.display = "none";
       } else {
         errorMessage.innerText = data.error;
+        errorMessage.style.display = "block";
         successMessage.style.display = "none";
       }
     } catch (error) {

@@ -14,7 +14,7 @@ function authenticateToken(req, res, next) {
       return res.redirect("/"); //przekierowanie na stronę logowania
     }
 
-    req.user = user;
+    req.user = { user_id: user.id, login: user.login };
     next();
   });
 }
