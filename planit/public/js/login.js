@@ -24,6 +24,7 @@ document
       }
     } catch (error) {
       console.error("Błąd:", error);
-      document.getElementById("error-message").innerText = "Wystąpił błąd.";
+      document.getElementById("error-message").innerText =
+        "Wystąpił błąd serwera.";
     }
   });

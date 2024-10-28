@@ -20,14 +20,19 @@ document
 
       const data = await response.json();
 
+      const successMessage = document.getElementById("success-message");
+      const errorMessage = document.getElementById("error-message");
+
       if (response.ok) {
-        document.getElementById("success-message").innerText = data.message;
+        successMessage.innerText = data.message;
+        errorMessage.style.display = "none";
       } else {
-        document.getElementById("error-message").innerText = data.error;
+        errorMessage.innerText = data.error;
+        successMessage.style.display = "none";
       }
     } catch (error) {
       console.error("Błąd:", error);
-      document.getElementById("error-message").innerText = "Wystąpił błąd.";
-      document.getElementById("success-message").innerText = "";
+      errorMessage.innerText = "Wystąpił błąd serwera.";
+      successMessage.style.display = "none";
     }
   });
