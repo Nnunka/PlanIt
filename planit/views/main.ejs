@@ -8,48 +8,114 @@
       rel="stylesheet"
       href="node_modules/bootstrap/dist/css/bootstrap.min.css"
     />
+    <style>
+      /* Stylizacja lewego sidebar */
+      .sidebar-left {
+        width: 15%;
+        height: 100vh;
+        background-color: #f8f9fa;
+        position: fixed;
+        top: 56px; /* Wysokość navbaru */
+        left: 0;
+        padding-top: 1rem;
+        padding-left: 1rem;
+      }
+
+      /* Stylizacja prawego sidebar */
+      .sidebar-right {
+        width: 0; /* Początkowa szerokość 0, aby był całkowicie schowany */
+        height: 100vh;
+        background-color: #f8f9fa;
+        position: fixed;
+        top: 56px; /* Wysokość navbaru */
+        right: 0;
+        overflow-x: hidden;
+        transition: width 0.3s ease;
+        /* Usuń padding, gdy sidebar jest schowany */
+        padding-top: 0;
+        padding-right: 0;
+      }
+
+      /* Wyświetlanie prawego sidebar po rozszerzeniu */
+      .sidebar-right.active {
+        width: 25%; /* Docelowa szerokość po aktywacji */
+        padding-top: 1rem; /* Przywrócenie paddingu */
+        padding-right: 1rem;
+      }
+
+      /* Dopasowanie treści głównej */
+      .content {
+        margin-left: 15%; /* Przesunięcie treści o szerokość lewego sidebar */
+        padding: 1rem;
+        margin-top: 56px; /* Wysokość navbaru */
+        transition: margin-right 0.3s ease;
+      }
+
+      /* Przesunięcie treści w lewo przy aktywnym prawym sidebar */
+      .content.shifted-right {
+        margin-right: 25%; /* Przesunięcie o szerokość prawego sidebar */
+      }
+    </style>
   </head>
 
   <body>
-    <%- include('partials/navbar') %>
+    <!-- Nawigacja główna -->
+    <nav
+      class="navbar navbar-light"
+      style="background-color: #e3f2fd; padding: 0.5rem 1.5rem"
+    >
+      <a class="navbar-brand" style="font-weight: bold; font-size: 1.25rem"
+        >PlanIt</a
+      >
+      <span class="navbar-text" style="font-size: 1rem">
+        Witaj, w PlanIt <b><%= user.login %></b>!
+      </span>
+      <button id="logout-button" class="btn btn-outline-danger btn-sm">
+        Wyloguj się
+      </button>
+    </nav>
 
-    <div class="container mt-4">
-      <h2>Twoja lista zadań</h2>
-      <div id="task-list" class="mt-3"></div>
+    <!-- Lewy Sidebar -->
+    <div class="sidebar-left">
+      <h4>Menu Lewy</h4>
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link" href="#">Link 1</a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Prawy Sidebar -->
+    <div id="rightSidebar" class="sidebar-right">
+      <h4>Menu Prawy</h4>
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link" href="#">Link A</a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Główna zawartość strony -->
+    <div id="mainContent" class="content">
+      <div class="container mt-4">
+        <h1>Witamy w PlanIt!</h1>
+        <p>Tutaj będzie zawartość strony głównej.</p>
+        <!-- Przycisk do otwierania prawego sidebar w głównej zawartości -->
+        <button class="btn btn-primary mt-3" onclick="toggleRightSidebar()">
+          ☰ Otwórz Prawy Sidebar
+        </button>
+      </div>
     </div>
 
     <script>
-      async function fetchTasks() {
-        try {
-          const response = await fetch("/tasks");
-          const data = await response.json();
-          const tasks = data.tasks;
+      function toggleRightSidebar() {
+        const rightSidebar = document.getElementById("rightSidebar");
+        const content = document.getElementById("mainContent");
 
-          const taskList = document.getElementById("task-list");
-          taskList.innerHTML = ""; // Wyczyść kontener przed dodaniem zadań
-
-          tasks.forEach((task) => {
-            const taskItem = document.createElement("div");
-            taskItem.classList.add("task-item");
-
-            taskItem.innerHTML = `
-              <strong>ID zadania:</strong> ${task.task_id} <br />
-              <strong>Nazwa zadania:</strong> ${task.task_name} <br />
-              <strong>Opis:</strong> ${task.task_more || "Brak opisu"} <br />
-              <strong>Grupa:</strong> ${task.task_group || "Brak grupy"} <br />
-              <strong>Termin:</strong> ${task.task_end_date || "Brak daty"} ${
-              task.task_end_time || ""
-            }
-            `;
-
-            taskList.appendChild(taskItem);
-          });
-        } catch (error) {
-          console.error("Błąd pobierania zadań:", error);
-        }
+        // Przełącz aktywację prawego sidebar i przesunięcie treści
+        rightSidebar.classList.toggle("active");
+        content.classList.toggle("shifted-right");
       }
-
-      document.addEventListener("DOMContentLoaded", fetchTasks);
     </script>
 
     <script src="/js/logout.js"></script>
