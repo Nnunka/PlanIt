@@ -12,23 +12,10 @@
   </head>
 
   <body>
-    <!-- Main Navigation -->
-    <nav
-      class="navbar navbar-light"
-      style="background-color: #e3f2fd; padding: 0.5rem 1.5rem"
-    >
-      <a class="navbar-brand" style="font-weight: bold; font-size: 1.25rem"
-        >PlanIt</a
-      >
-      <span class="navbar-text" style="font-size: 1rem">
-        Witaj, w PlanIt <b><%= user.login %></b>!
-      </span>
-      <button id="logout-button" class="btn btn-outline-danger btn-sm">
-        Wyloguj się
-      </button>
-    </nav>
+    <!--navbar-->
+    <%- include('partials/navbar.ejs') %>
 
-    <!-- Left Sidebar -->
+    <!--left sidebar-->
     <div class="sidebar-left">
       <h4>Menu Lewy</h4>
       <ul class="nav flex-column">
@@ -37,8 +24,8 @@
     </div>
 
     <!-- Right Sidebar -->
-    <div id="rightSidebar" class="sidebar-right">
-      <div class="sidebar-content">
+    <div id="sidebar-right" class="sidebar-right">
+      <div class="sidebar-right-content">
         <h4>Szczegóły zadania</h4>
         <div id="task-details">
           <p>
@@ -112,10 +99,8 @@
 
           // Populate sidebar fields with data from the database
           document.getElementById("task-name").value = data.task_name || "";
-          document.getElementById("task-more").value =
-            data.task_more || "Brak opisu";
-          document.getElementById("task-group").value =
-            data.task_group || "Brak grupy";
+          document.getElementById("task-more").value = data.task_more || "";
+          document.getElementById("task-group").value = data.task_group || "";
           document.getElementById("task-end-time").value =
             data.task_end_time || "";
           document.getElementById("task-end-date").value =
@@ -184,7 +169,7 @@
       }
 
       function toggleRightSidebar() {
-        const rightSidebar = document.getElementById("rightSidebar");
+        const rightSidebar = document.getElementById("sidebar-right");
         const content = document.getElementById("mainContent");
 
         // Toggle the active class for both the sidebar and the content shift

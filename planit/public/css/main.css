@@ -24,17 +24,17 @@
 
 /* Wyświetlanie prawego sidebar po rozszerzeniu */
 .sidebar-right.active {
-  width: 25%; /* Docelowa szerokość po aktywacji */
+  width: 20%; /* Docelowa szerokość po aktywacji */
 }
 
 /* Stylizacja zawartości prawego sidebar */
-.sidebar-content {
+.sidebar-right-content {
   opacity: 1;
   transition: opacity 0.3s ease;
 }
 
 /* Ukrywanie zawartości prawego sidebar, gdy jest zamknięty */
-.sidebar-right:not(.active) .sidebar-content {
+.sidebar-right:not(.active) .sidebar-right-content {
   opacity: 0;
   pointer-events: none; /* Zapobiega interakcji z niewidoczną zawartością */
   transition: opacity 0.3s ease; /* Opóźnienie przy zamykaniu */
@@ -50,11 +50,11 @@
 
 /* Przesunięcie treści w lewo przy aktywnym prawym sidebar */
 .content.shifted-right {
-  margin-right: 25%; /* Przesunięcie o szerokość prawego sidebar */
+  margin-right: 20%; /* Przesunięcie o szerokość prawego sidebar */
 }
 
 .task-item {
-  cursor: pointer;
+  cursor: default;
   padding: 5px;
   border-bottom: 1px solid #ddd;
 }

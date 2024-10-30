@@ -37,6 +37,7 @@ router.get(
   taskController.updateTask //trasa do edycji zadań
 );
 
+//edycja zadań
 router.put("/task/:taskId", taskController.updateTask);
 
 module.exports = router;
