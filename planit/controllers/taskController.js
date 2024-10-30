@@ -16,10 +16,8 @@ exports.getTaskName = (req, res) => {
 
 exports.getTaskDetails = (req, res) => {
   const taskId = req.params.taskId;
-  console.log("Received Task ID:", taskId);
 
   const query = "SELECT * FROM tasks WHERE task_id = ?";
-
   db.query(query, [taskId], (err, results) => {
     if (err) {
       console.error("Error fetching task details:", err);
@@ -30,4 +28,25 @@ exports.getTaskDetails = (req, res) => {
       res.json(results[0]); // Return the first result as the task details
     }
   });
+};
+
+exports.updateTask = (req, res) => {
+  const taskId = req.params.taskId;
+  const { task_name, task_more, task_group, task_end_time, task_end_date } =
+    req.body;
+
+  const query =
+    "UPDATE tasks SET task_name = ?, task_more = ?, task_group = ?, task_end_time = ?, task_end_date = ? WHERE task_id = ?";
+  db.query(
+    query,
+    [task_name, task_more, task_group, task_end_time, task_end_date, taskId],
+    (err, result) => {
+      if (err) {
+        console.error("Error updating task:", err);
+        res.status(500).json({ error: "Server error" });
+      } else {
+        res.status(200).json({ message: "Task updated successfully" });
+      }
+    }
+  );
 };

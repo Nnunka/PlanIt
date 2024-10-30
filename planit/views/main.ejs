@@ -12,7 +12,7 @@
   </head>
 
   <body>
-    <!-- Nawigacja główna -->
+    <!-- Main Navigation -->
     <nav
       class="navbar navbar-light"
       style="background-color: #e3f2fd; padding: 0.5rem 1.5rem"
@@ -28,36 +28,47 @@
       </button>
     </nav>
 
-    <!-- Lewy Sidebar -->
+    <!-- Left Sidebar -->
     <div class="sidebar-left">
       <h4>Menu Lewy</h4>
       <ul class="nav flex-column">
-        <li class="nav-item">
-          <a class="nav-link" href="#">Link 1</a>
-        </li>
+        <li class="nav-item"><a class="nav-link" href="#">Link 1</a></li>
       </ul>
     </div>
 
-    <!-- Prawy Sidebar -->
+    <!-- Right Sidebar -->
     <div id="rightSidebar" class="sidebar-right">
       <div class="sidebar-content">
         <h4>Szczegóły zadania</h4>
         <div id="task-details">
-          <p><strong>Nazwa:</strong> <span id="task-name"></span></p>
-          <p><strong>Opis:</strong> <span id="task-more"></span></p>
-          <p><strong>Grupa:</strong> <span id="task-group"></span></p>
+          <p>
+            <strong>Nazwa:</strong>
+            <input id="task-name" type="text" disabled />
+          </p>
+          <p>
+            <strong>Opis:</strong> <textarea id="task-more" disabled></textarea>
+          </p>
+          <p>
+            <strong>Grupa:</strong>
+            <input id="task-group" type="text" disabled />
+          </p>
           <p>
             <strong>Godzina zakończenia:</strong>
-            <span id="task-end-time"></span>
+            <input id="task-end-time" type="time" disabled />
           </p>
           <p>
-            <strong>Data zakończenia:</strong> <span id="task-end-date"></span>
+            <strong>Data zakończenia:</strong>
+            <input id="task-end-date" type="date" disabled />
           </p>
         </div>
+        <button id="edit-button" onclick="toggleEditMode()">Edytuj</button>
+        <button id="save-button" onclick="saveTask()" style="display: none">
+          Zapisz
+        </button>
       </div>
     </div>
 
-    <!-- Główna zawartość strony -->
+    <!-- Main Content -->
     <div id="mainContent" class="content">
       <div class="container mt-4">
         <h2>Twoja lista zadań</h2>
@@ -66,18 +77,22 @@
     </div>
 
     <script>
+      let currentTaskId; // Store the current task ID
+
       async function fetchTasks() {
         try {
           const response = await fetch("/tasks");
           const data = await response.json();
           const tasks = data.tasks;
           const taskList = document.getElementById("task-list");
-          taskList.innerHTML = ""; // Wyczyść kontener przed dodaniem zadań
+          taskList.innerHTML = ""; // Clear container before adding tasks
+
           tasks.forEach((task) => {
             const taskItem = document.createElement("div");
             taskItem.classList.add("task-item");
-            taskItem.innerHTML = `${task.task_name}`;
+            taskItem.innerText = task.task_name;
 
+            // Open sidebar and display task details on click
             taskItem.onclick = () =>
               fetchTaskDetailsAndShowSidebar(task.task_id);
 
@@ -87,23 +102,24 @@
           console.error("Błąd pobierania zadań:", error);
         }
       }
-      document.addEventListener("DOMContentLoaded", fetchTasks);
 
       async function fetchTaskDetailsAndShowSidebar(taskId) {
+        currentTaskId = taskId; // Store task ID
+
         try {
           const response = await fetch(`/task/${taskId}`);
           const data = await response.json();
 
-          // Update the sidebar with task details
-          document.getElementById("task-name").innerText = data.task_name;
-          document.getElementById("task-more").innerText =
+          // Populate sidebar fields with data from the database
+          document.getElementById("task-name").value = data.task_name || "";
+          document.getElementById("task-more").value =
             data.task_more || "Brak opisu";
-          document.getElementById("task-group").innerText =
+          document.getElementById("task-group").value =
             data.task_group || "Brak grupy";
-          document.getElementById("task-end-time").innerText =
-            data.task_end_time || "Brak";
-          document.getElementById("task-end-date").innerText =
-            data.task_end_date || "Brak";
+          document.getElementById("task-end-time").value =
+            data.task_end_time || "";
+          document.getElementById("task-end-date").value =
+            data.task_end_date || "";
 
           toggleRightSidebar();
         } catch (error) {
@@ -111,16 +127,72 @@
         }
       }
 
-      document.addEventListener("DOMContentLoaded", fetchTaskDetails);
+      function toggleEditMode() {
+        const isEditing =
+          document.getElementById("task-name").disabled === false;
 
-      function toggleRightSidebar(taskId) {
+        document.getElementById("task-name").disabled = isEditing;
+        document.getElementById("task-more").disabled = isEditing;
+        document.getElementById("task-group").disabled = isEditing;
+        document.getElementById("task-end-time").disabled = isEditing;
+        document.getElementById("task-end-date").disabled = isEditing;
+
+        document.getElementById("edit-button").style.display = isEditing
+          ? "block"
+          : "none";
+        document.getElementById("save-button").style.display = isEditing
+          ? "none"
+          : "block";
+      }
+
+      async function saveTask() {
+        // Get values from the form
+        const task_name = document.getElementById("task-name").value || null;
+        const task_more = document.getElementById("task-more").value || null;
+        const task_group = document.getElementById("task-group").value || null;
+        const task_end_time =
+          document.getElementById("task-end-time").value || null;
+        const task_end_date =
+          document.getElementById("task-end-date").value || null;
+
+        // Create an object with only non-null values
+        const updatedTask = {};
+        if (task_name !== null) updatedTask.task_name = task_name;
+        if (task_more !== null) updatedTask.task_more = task_more;
+        if (task_group !== null) updatedTask.task_group = task_group;
+        if (task_end_time !== null) updatedTask.task_end_time = task_end_time;
+        if (task_end_date !== null) updatedTask.task_end_date = task_end_date;
+
+        try {
+          const response = await fetch(`/task/${currentTaskId}`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(updatedTask), // Only send non-empty fields
+          });
+
+          if (response.ok) {
+            console.log("Task updated successfully");
+            toggleEditMode(); // Switch back to read-only mode after saving
+          } else {
+            console.error("Error updating task");
+          }
+        } catch (error) {
+          console.error("Błąd zapisywania zadania:", error);
+        }
+      }
+
+      function toggleRightSidebar() {
         const rightSidebar = document.getElementById("rightSidebar");
         const content = document.getElementById("mainContent");
 
-        // Przełącz aktywację prawego sidebar i przesunięcie treści
+        // Toggle the active class for both the sidebar and the content shift
         rightSidebar.classList.toggle("active");
         content.classList.toggle("shifted-right");
       }
+
+      document.addEventListener("DOMContentLoaded", fetchTasks);
     </script>
 
     <script src="/js/logout.js"></script>

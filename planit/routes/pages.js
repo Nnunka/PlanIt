@@ -28,11 +28,15 @@ router.get("/main", authenticateToken, (req, res) => {
   res.render("main", { user: req.user });
 });
 
-//////
-
 //trasa do pobierania listy zadań z bazy
 router.get("/tasks", authenticateToken, taskController.getTaskName);
 
-router.get("/task/:taskId", taskController.getTaskDetails);
+router.get(
+  "/task/:taskId",
+  taskController.getTaskDetails, //trasa do pobierania szczegółów zadań
+  taskController.updateTask //trasa do edycji zadań
+);
+
+router.put("/task/:taskId", taskController.updateTask);
 
 module.exports = router;
