@@ -1,0 +1,54 @@
+/* Stylizacja lewego sidebar */
+.sidebar-left {
+  width: 15%;
+  height: 100vh;
+  background-color: #f8f9fa;
+  position: fixed;
+  top: 56px; /* Wysokość navbaru */
+  left: 0;
+  padding-top: 1rem;
+  padding-left: 1rem;
+}
+
+/* Stylizacja prawego sidebar */
+.sidebar-right {
+  width: 0;
+  height: 100vh;
+  background-color: #f8f9fa;
+  position: fixed;
+  top: 56px; /* Wysokość navbaru */
+  right: 0;
+  overflow-x: hidden;
+  transition: width 0.3s ease;
+}
+
+/* Wyświetlanie prawego sidebar po rozszerzeniu */
+.sidebar-right.active {
+  width: 25%; /* Docelowa szerokość po aktywacji */
+}
+
+/* Stylizacja zawartości prawego sidebar */
+.sidebar-content {
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+/* Ukrywanie zawartości prawego sidebar, gdy jest zamknięty */
+.sidebar-right:not(.active) .sidebar-content {
+  opacity: 0;
+  pointer-events: none; /* Zapobiega interakcji z niewidoczną zawartością */
+  transition: opacity 0.3s ease; /* Opóźnienie przy zamykaniu */
+}
+
+/* Dopasowanie treści głównej */
+.content {
+  margin-left: 15%; /* Przesunięcie treści o szerokość lewego sidebar */
+  padding: 1rem;
+  margin-top: 56px; /* Wysokość navbaru */
+  transition: margin-right 0.3s ease;
+}
+
+/* Przesunięcie treści w lewo przy aktywnym prawym sidebar */
+.content.shifted-right {
+  margin-right: 25%; /* Przesunięcie o szerokość prawego sidebar */
+}

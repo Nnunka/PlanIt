@@ -8,62 +8,7 @@
       rel="stylesheet"
       href="node_modules/bootstrap/dist/css/bootstrap.min.css"
     />
-    <style>
-      /* Stylizacja lewego sidebar */
-      .sidebar-left {
-        width: 15%;
-        height: 100vh;
-        background-color: #f8f9fa;
-        position: fixed;
-        top: 56px; /* Wysokość navbaru */
-        left: 0;
-        padding-top: 1rem;
-        padding-left: 1rem;
-      }
-
-      /* Stylizacja prawego sidebar */
-      .sidebar-right {
-        width: 0;
-        height: 100vh;
-        background-color: #f8f9fa;
-        position: fixed;
-        top: 56px; /* Wysokość navbaru */
-        right: 0;
-        overflow-x: hidden;
-        transition: width 0.3s ease;
-      }
-
-      /* Wyświetlanie prawego sidebar po rozszerzeniu */
-      .sidebar-right.active {
-        width: 25%; /* Docelowa szerokość po aktywacji */
-      }
-
-      /* Stylizacja zawartości prawego sidebar */
-      .sidebar-content {
-        opacity: 1;
-        transition: opacity 0.3s ease;
-      }
-
-      /* Ukrywanie zawartości prawego sidebar, gdy jest zamknięty */
-      .sidebar-right:not(.active) .sidebar-content {
-        opacity: 0;
-        pointer-events: none; /* Zapobiega interakcji z niewidoczną zawartością */
-        transition: opacity 0.3s ease; /* Opóźnienie przy zamykaniu */
-      }
-
-      /* Dopasowanie treści głównej */
-      .content {
-        margin-left: 15%; /* Przesunięcie treści o szerokość lewego sidebar */
-        padding: 1rem;
-        margin-top: 56px; /* Wysokość navbaru */
-        transition: margin-right 0.3s ease;
-      }
-
-      /* Przesunięcie treści w lewo przy aktywnym prawym sidebar */
-      .content.shifted-right {
-        margin-right: 25%; /* Przesunięcie o szerokość prawego sidebar */
-      }
-    </style>
+    <link rel="stylesheet" href="/css/main.css" />
   </head>
 
   <body>
@@ -90,12 +35,6 @@
         <li class="nav-item">
           <a class="nav-link" href="#">Link 1</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Link 2</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Link 3</a>
-        </li>
       </ul>
     </div>
 
@@ -107,12 +46,6 @@
           <li class="nav-item">
             <a class="nav-link" href="#">Link A</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Link B</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Link C</a>
-          </li>
         </ul>
       </div>
     </div>
@@ -120,8 +53,9 @@
     <!-- Główna zawartość strony -->
     <div id="mainContent" class="content">
       <div class="container mt-4">
-        <h1>Witamy w PlanIt!</h1>
-        <p>Tutaj będzie zawartość strony głównej.</p>
+        <h2>Twoja lista zadań</h2>
+        <div id="task-list" class="mt-3"></div>
+
         <!-- Przycisk do otwierania prawego sidebar w głównej zawartości -->
         <button class="btn btn-primary mt-3" onclick="toggleRightSidebar()">
           ☰ Otwórz Prawy Sidebar
@@ -130,6 +64,25 @@
     </div>
 
     <script>
+      async function fetchTasks() {
+        try {
+          const response = await fetch("/tasks");
+          const data = await response.json();
+          const tasks = data.tasks;
+          const taskList = document.getElementById("task-list");
+          taskList.innerHTML = ""; // Wyczyść kontener przed dodaniem zadań
+          tasks.forEach((task) => {
+            const taskItem = document.createElement("div");
+            taskItem.classList.add("task-item");
+            taskItem.innerHTML = `${task.task_name}`;
+            taskList.appendChild(taskItem);
+          });
+        } catch (error) {
+          console.error("Błąd pobierania zadań:", error);
+        }
+      }
+      document.addEventListener("DOMContentLoaded", fetchTasks);
+
       function toggleRightSidebar() {
         const rightSidebar = document.getElementById("rightSidebar");
         const content = document.getElementById("mainContent");

@@ -1,9 +1,9 @@
 const db = require("../config/db");
 
-exports.getTasks = (req, res) => {
+exports.getTaskName = (req, res) => {
   const userId = req.user.user_id;
 
-  const query = "SELECT * FROM tasks WHERE task_user_id = ?";
+  const query = "SELECT task_name FROM tasks WHERE task_user_id = ?";
   db.query(query, [userId], (err, results) => {
     if (err) {
       console.error("Błąd pobierania zadań:", err);

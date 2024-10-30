@@ -31,6 +31,6 @@ router.get("/main", authenticateToken, (req, res) => {
 //////
 
 //trasa do pobierania listy zadań z bazy
-router.get("/tasks", authenticateToken, taskController.getTasks);
+router.get("/tasks", authenticateToken, taskController.getTaskName);
 
 module.exports = router;
