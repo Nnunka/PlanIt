@@ -52,3 +52,9 @@
 .content.shifted-right {
   margin-right: 25%; /* Przesunięcie o szerokość prawego sidebar */
 }
+
+.task-item {
+  cursor: pointer;
+  padding: 5px;
+  border-bottom: 1px solid #ddd;
+}
