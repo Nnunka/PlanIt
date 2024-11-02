@@ -84,3 +84,20 @@ exports.addTask = (req, res) => {
     }
   });
 };
+
+exports.deleteTask = (req, res) => {
+  const taskId = req.params.taskId;
+
+  const query = "DELETE FROM tasks WHERE task_id = ?";
+  db.query(query, [taskId], (err, result) => {
+    if (err) {
+      console.error("Błąd usuwania zadania:", err);
+      res.status(500).json({ error: "Błąd serwera" });
+    } else if (result.affectedRows === 0) {
+      res.status(404).json({ error: "Zadanie nie zostało znalezione" });
+    } else {
+      console.log("Zadanie usunięte:", taskId);
+      res.status(200).json({ message: "Zadanie usunięte pomyślnie" });
+    }
+  });
+};

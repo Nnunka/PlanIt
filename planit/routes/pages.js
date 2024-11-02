@@ -43,4 +43,7 @@ router.put("/task/:taskId", taskController.updateTask);
 //dodawanie zadań
 router.post("/task", authenticateToken, taskController.addTask);
 
+//usuwanie zadań
+router.delete("/task/:taskId", authenticateToken, taskController.deleteTask);
+
 module.exports = router;

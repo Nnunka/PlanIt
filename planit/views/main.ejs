@@ -79,6 +79,14 @@
           >
             Zapisz
           </button>
+          <button
+            type="button"
+            id="delete-button"
+            class="btn btn-outline-danger mt-3"
+            onclick="deleteTask()"
+          >
+            Usuń
+          </button>
         </form>
       </div>
     </div>
@@ -152,7 +160,7 @@
           document.getElementById("task-end-date").value =
             data.task_end_date || "";
 
-          showRightSidebar();
+          toggleRightSidebar();
         } catch (error) {
           console.error("Błąd pobierania szczegółów zadania:", error);
         }
@@ -177,7 +185,6 @@
       }
 
       async function saveTask() {
-        // Get values from the form
         const task_name = document.getElementById("task-name").value || null;
         const task_more = document.getElementById("task-more").value || null;
         const task_group = document.getElementById("task-group").value || null;
@@ -186,7 +193,6 @@
         const task_end_date =
           document.getElementById("task-end-date").value || null;
 
-        // Create an object with only non-null values
         const updatedTask = {};
         if (task_name !== null) updatedTask.task_name = task_name;
         if (task_more !== null) updatedTask.task_more = task_more;
@@ -200,7 +206,7 @@
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(updatedTask), // Only send non-empty fields
+            body: JSON.stringify(updatedTask),
           });
 
           if (response.ok) {
@@ -214,11 +220,10 @@
         }
       }
 
-      function showRightSidebar() {
+      function toggleRightSidebar() {
         const rightSidebar = document.getElementById("sidebar-right");
         const content = document.getElementById("mainContent");
 
-        // Toggle the active class for both the sidebar and the content shift
         rightSidebar.classList.toggle("active");
         content.classList.toggle("shifted-right");
       }
@@ -226,7 +231,7 @@
       document.addEventListener("DOMContentLoaded", showTasks);
 
       async function addTask(event) {
-        event.preventDefault(); // Zapobiega przeładowaniu strony
+        event.preventDefault();
 
         const taskName = document.getElementById("new-task-name").value;
 
@@ -241,8 +246,8 @@
 
           if (response.ok) {
             console.log("Zadanie zostało dodane.");
-            document.getElementById("new-task-name").value = ""; // Resetuje pole po dodaniu
-            fetchTasks(); // Odświeża listę zadań po dodaniu nowego zadania
+            document.getElementById("new-task-name").value = "";
+            showTasks(); // Refreshes the task list after adding a new task
           } else {
             console.error("Błąd dodawania zadania.");
           }
@@ -250,7 +255,78 @@
           console.error("Błąd dodawania zadania:", error);
         }
       }
+
+      function deleteTask() {
+        // Pokaż modal potwierdzenia usunięcia
+        const deleteConfirmationModal = new bootstrap.Modal(
+          document.getElementById("deleteConfirmationModal")
+        );
+        deleteConfirmationModal.show();
+
+        // Obsłuż kliknięcie przycisku "Usuń" w modalu
+        document.getElementById("confirmDeleteButton").onclick =
+          async function () {
+            try {
+              const response = await fetch(`/task/${currentTaskId}`, {
+                method: "DELETE",
+              });
+
+              if (response.ok) {
+                console.log("Zadanie zostało usunięte.");
+                toggleRightSidebar(); // Zamknij sidebar po usunięciu
+                showTasks(); // Odśwież listę zadań
+                deleteConfirmationModal.hide(); // Zamknij modal
+              } else {
+                console.error("Błąd usuwania zadania.");
+              }
+            } catch (error) {
+              console.error("Błąd usuwania zadania:", error);
+            }
+          };
+      }
     </script>
+
+    <!-- Modal Potwierdzenia Usunięcia -->
+    <div
+      class="modal fade"
+      id="deleteConfirmationModal"
+      tabindex="-1"
+      aria-labelledby="deleteConfirmationModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="deleteConfirmationModalLabel">
+              Potwierdzenie usunięcia
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Zamknij"
+            ></button>
+          </div>
+          <div class="modal-body">Czy na pewno chcesz usunąć to zadanie?</div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Anuluj
+            </button>
+            <button
+              type="button"
+              class="btn btn-danger"
+              id="confirmDeleteButton"
+            >
+              Usuń
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <script src="/js/logout.js"></script>
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
