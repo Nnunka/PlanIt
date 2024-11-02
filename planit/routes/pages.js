@@ -40,4 +40,7 @@ router.get(
 //edycja zadań
 router.put("/task/:taskId", taskController.updateTask);
 
+//dodawanie zadań
+router.post("/task", authenticateToken, taskController.addTask);
+
 module.exports = router;

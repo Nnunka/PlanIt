@@ -89,6 +89,24 @@
         <h2>Twoja lista zadań</h2>
         <div id="task-list" class="mt-3"></div>
       </div>
+      <div id="add-task-form" class="container mt-4">
+        <h3>Dodaj nowe zadanie</h3>
+        <form onsubmit="addTask(event)">
+          <div class="form-group">
+            <label for="new-task-name">Nazwa zadania</label>
+            <input
+              type="text"
+              id="new-task-name"
+              class="form-control"
+              placeholder="Wpisz nazwę zadania"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-primary mt-2">
+            Dodaj zadanie
+          </button>
+        </form>
+      </div>
     </div>
 
     <script>
@@ -206,6 +224,32 @@
       }
 
       document.addEventListener("DOMContentLoaded", showTasks);
+
+      async function addTask(event) {
+        event.preventDefault(); // Zapobiega przeładowaniu strony
+
+        const taskName = document.getElementById("new-task-name").value;
+
+        try {
+          const response = await fetch("/task", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ task_name: taskName }),
+          });
+
+          if (response.ok) {
+            console.log("Zadanie zostało dodane.");
+            document.getElementById("new-task-name").value = ""; // Resetuje pole po dodaniu
+            fetchTasks(); // Odświeża listę zadań po dodaniu nowego zadania
+          } else {
+            console.error("Błąd dodawania zadania.");
+          }
+        } catch (error) {
+          console.error("Błąd dodawania zadania:", error);
+        }
+      }
     </script>
 
     <script src="/js/logout.js"></script>

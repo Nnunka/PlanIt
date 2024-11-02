@@ -48,11 +48,39 @@ exports.updateTask = (req, res) => {
       } else {
         res.status(200).json({ message: "Task updated successfully" });
         console.log(
-          "Zadanie zaktualizowano. Task ID:",
-          req.params.taskId,
-          req.body
+          "Zadanie zaktualizowano:",
+          req.body,
+          "Task ID:",
+          req.params.taskId
         );
       }
     }
   );
+};
+
+exports.addTask = (req, res) => {
+  const { task_name } = req.body;
+  const task_user_id = req.user.user_id; // Pobiera ID zalogowanego użytkownika
+
+  if (!task_name || !task_user_id) {
+    return res
+      .status(400)
+      .json({ error: "Brak nazwy zadania lub ID użytkownika." });
+  }
+
+  const query = "INSERT INTO tasks (task_name, task_user_id) VALUES (?, ?)";
+  db.query(query, [task_name, task_user_id], (err, result) => {
+    if (err) {
+      console.error("Błąd dodawania zadania:", err);
+      res.status(500).json({ error: "Błąd serwera" });
+    } else {
+      res.status(201).json({ message: "Zadanie dodane pomyślnie" });
+      console.log(
+        "Dodano nowe zadanie:",
+        req.body,
+        "User ID:",
+        req.user.user_id
+      );
+    }
+  });
 };
