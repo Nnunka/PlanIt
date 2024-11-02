@@ -1,0 +1,52 @@
+<div id="sidebar-right" class="sidebar-right">
+  <div class="sidebar-right-content">
+    <h4>Szczegóły zadania</h4>
+    <form id="task-details-form">
+      <div class="form-group">
+        <label for="task-name"><strong>Nazwa:</strong></label>
+        <input id="task-name" class="form-control" type="text" disabled />
+      </div>
+      <div class="form-group">
+        <label for="task-more"><strong>Opis:</strong></label>
+        <textarea id="task-more" class="form-control" disabled></textarea>
+      </div>
+      <div class="form-group">
+        <label for="task-group"><strong>Grupa:</strong></label>
+        <input id="task-group" class="form-control" type="text" disabled />
+      </div>
+      <div class="form-group">
+        <label for="task-end-time"><strong>Godzina zakończenia:</strong></label>
+        <input id="task-end-time" class="form-control" type="time" disabled />
+      </div>
+      <div class="form-group">
+        <label for="task-end-date"><strong>Data zakończenia:</strong></label>
+        <input id="task-end-date" class="form-control" type="date" disabled />
+      </div>
+      <button
+        type="button"
+        id="edit-button"
+        class="btn btn-primary"
+        onclick="editTask()"
+      >
+        Edytuj
+      </button>
+      <button
+        type="button"
+        id="save-button"
+        class="btn btn-success"
+        onclick="saveTask()"
+        style="display: none"
+      >
+        Zapisz
+      </button>
+      <button
+        type="button"
+        id="delete-button"
+        class="btn btn-outline-danger mt-3"
+        onclick="deleteTask()"
+      >
+        Usuń
+      </button>
+    </form>
+  </div>
+</div>

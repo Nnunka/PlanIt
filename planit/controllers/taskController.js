@@ -60,7 +60,7 @@ exports.updateTask = (req, res) => {
 
 exports.addTask = (req, res) => {
   const { task_name } = req.body;
-  const task_user_id = req.user.user_id; // Pobiera ID zalogowanego użytkownika
+  const task_user_id = req.user.user_id;
 
   if (!task_name || !task_user_id) {
     return res

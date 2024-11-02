@@ -13,8 +13,7 @@
 
   <body>
     <!--navbar-->
-    <%- include('partials/navbar.ejs') %> <%-
-    include('partials/deleteTaskModal') %>
+    <%-include('partials/navbar.ejs')%>
 
     <!--left sidebar-->
     <div class="sidebar-left">
@@ -24,76 +23,11 @@
       </ul>
     </div>
 
-    <!-- Right Sidebar -->
-    <div id="sidebar-right" class="sidebar-right">
-      <div class="sidebar-right-content">
-        <h4>Szczegóły zadania</h4>
-        <form id="task-details-form">
-          <div class="form-group">
-            <label for="task-name"><strong>Nazwa:</strong></label>
-            <input id="task-name" class="form-control" type="text" disabled />
-          </div>
-          <div class="form-group">
-            <label for="task-more"><strong>Opis:</strong></label>
-            <textarea id="task-more" class="form-control" disabled></textarea>
-          </div>
-          <div class="form-group">
-            <label for="task-group"><strong>Grupa:</strong></label>
-            <input id="task-group" class="form-control" type="text" disabled />
-          </div>
-          <div class="form-group">
-            <label for="task-end-time"
-              ><strong>Godzina zakończenia:</strong></label
-            >
-            <input
-              id="task-end-time"
-              class="form-control"
-              type="time"
-              disabled
-            />
-          </div>
-          <div class="form-group">
-            <label for="task-end-date"
-              ><strong>Data zakończenia:</strong></label
-            >
-            <input
-              id="task-end-date"
-              class="form-control"
-              type="date"
-              disabled
-            />
-          </div>
-          <button
-            type="button"
-            id="edit-button"
-            class="btn btn-primary"
-            onclick="editTask()"
-          >
-            Edytuj
-          </button>
-          <button
-            type="button"
-            id="save-button"
-            class="btn btn-success"
-            onclick="saveTask()"
-            style="display: none"
-          >
-            Zapisz
-          </button>
-          <button
-            type="button"
-            id="delete-button"
-            class="btn btn-outline-danger mt-3"
-            onclick="deleteTask()"
-          >
-            Usuń
-          </button>
-        </form>
-      </div>
-    </div>
+    <!--right sidebar-->
+    <%-include('partials/rightSidebar.ejs')%>
 
-    <!-- Main Content -->
-    <div id="mainContent" class="content">
+    <!--main content-->
+    <div id="main-content" class="content">
       <div class="container mt-4">
         <h2>Twoja lista zadań</h2>
         <div id="task-list" class="mt-3"></div>
@@ -118,195 +52,12 @@
       </div>
     </div>
 
-    <script>
-      let currentTaskId = null; // Store the current task ID
-
-      document.addEventListener("DOMContentLoaded", showTasks);
-
-      // Fetch and display tasks
-      async function showTasks() {
-        try {
-          const response = await fetch("/tasks");
-          const data = await response.json();
-          const tasks = data.tasks;
-          const taskList = document.getElementById("task-list");
-          taskList.innerHTML = ""; // Clear container before adding tasks
-
-          tasks.forEach((task) => {
-            const taskItem = document.createElement("div");
-            taskItem.classList.add("task-item");
-            taskItem.innerText = task.task_name;
-
-            // Open sidebar and display task details on click
-            taskItem.onclick = () =>
-              showTaskDetailsAndRightSidebar(task.task_id);
-
-            taskList.appendChild(taskItem);
-          });
-        } catch (error) {
-          console.error("Błąd pobierania zadań:", error);
-        }
-      }
-
-      // Show task details in sidebar, toggle visibility
-      async function showTaskDetailsAndRightSidebar(taskId) {
-        const rightSidebar = document.getElementById("sidebar-right");
-
-        // If the same task is clicked, toggle sidebar closed
-        if (
-          taskId === currentTaskId &&
-          rightSidebar.classList.contains("active")
-        ) {
-          toggleRightSidebar(false);
-          currentTaskId = null;
-          return;
-        }
-
-        // Set new task ID and populate sidebar
-        currentTaskId = taskId;
-
-        try {
-          const response = await fetch(`/task/${taskId}`);
-          const data = await response.json();
-
-          // Populate sidebar fields with data from the database
-          document.getElementById("task-name").value = data.task_name || "";
-          document.getElementById("task-more").value = data.task_more || "";
-          document.getElementById("task-group").value = data.task_group || "";
-          document.getElementById("task-end-time").value =
-            data.task_end_time || "";
-          document.getElementById("task-end-date").value =
-            data.task_end_date || "";
-
-          toggleRightSidebar(true); // Open sidebar
-        } catch (error) {
-          console.error("Błąd pobierania szczegółów zadania:", error);
-        }
-      }
-
-      // Toggle sidebar open/close
-      function toggleRightSidebar(open) {
-        const rightSidebar = document.getElementById("sidebar-right");
-        const content = document.getElementById("mainContent");
-
-        if (open) {
-          rightSidebar.classList.add("active");
-          content.classList.add("shifted-right");
-        } else {
-          rightSidebar.classList.remove("active");
-          content.classList.remove("shifted-right");
-        }
-      }
-
-      // Enable task editing
-      function editTask() {
-        const isEditing = !document.getElementById("task-name").disabled;
-
-        document.getElementById("task-name").disabled = isEditing;
-        document.getElementById("task-more").disabled = isEditing;
-        document.getElementById("task-group").disabled = isEditing;
-        document.getElementById("task-end-time").disabled = isEditing;
-        document.getElementById("task-end-date").disabled = isEditing;
-
-        document.getElementById("edit-button").style.display = isEditing
-          ? "block"
-          : "none";
-        document.getElementById("save-button").style.display = isEditing
-          ? "none"
-          : "block";
-      }
-
-      // Save task changes
-      async function saveTask() {
-        const task_name = document.getElementById("task-name").value || null;
-        const task_more = document.getElementById("task-more").value || null;
-        const task_group = document.getElementById("task-group").value || null;
-        const task_end_time =
-          document.getElementById("task-end-time").value || null;
-        const task_end_date =
-          document.getElementById("task-end-date").value || null;
-
-        const updatedTask = {
-          task_name,
-          task_more,
-          task_group,
-          task_end_time,
-          task_end_date,
-        };
-
-        try {
-          const response = await fetch(`/task/${currentTaskId}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(updatedTask),
-          });
-
-          if (response.ok) {
-            console.log("Task updated successfully");
-            editTask(); // Switch back to read-only mode after saving
-          } else {
-            console.error("Error updating task");
-          }
-        } catch (error) {
-          console.error("Błąd zapisywania zadania:", error);
-        }
-      }
-
-      // Add new task
-      async function addTask(event) {
-        event.preventDefault();
-
-        const taskName = document.getElementById("new-task-name").value;
-
-        try {
-          const response = await fetch("/task", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ task_name: taskName }),
-          });
-
-          if (response.ok) {
-            console.log("Zadanie zostało dodane.");
-            document.getElementById("new-task-name").value = "";
-            showTasks(); // Refresh task list after adding
-          } else {
-            console.error("Błąd dodawania zadania.");
-          }
-        } catch (error) {
-          console.error("Błąd dodawania zadania:", error);
-        }
-      }
-
-      // Delete task with confirmation modal
-      function deleteTask() {
-        const deleteConfirmationModal = new bootstrap.Modal(
-          document.getElementById("deleteConfirmationModal")
-        );
-        deleteConfirmationModal.show();
-
-        document.getElementById("confirmDeleteButton").onclick =
-          async function () {
-            try {
-              const response = await fetch(`/task/${currentTaskId}`, {
-                method: "DELETE",
-              });
-
-              if (response.ok) {
-                console.log("Zadanie zostało usunięte.");
-                toggleRightSidebar(false); // Close sidebar after deletion
-                showTasks(); // Refresh task list
-                deleteConfirmationModal.hide(); // Close modal
-              } else {
-                console.error("Błąd usuwania zadania.");
-              }
-            } catch (error) {
-              console.error("Błąd usuwania zadania:", error);
-            }
-          };
-      }
-    </script>
+    <!--modal do potwierdzenia usunięcia zadania-->
+    <%-include('partials/deleteTaskModal')%>
 
     <script src="/js/logout.js"></script>
+    <script src="/js/task.js"></script>
+    <script src="/js/rightSidebar.js"></script>
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
