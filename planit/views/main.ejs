@@ -119,8 +119,11 @@
     </div>
 
     <script>
-      let currentTaskId; // Store the current task ID
+      let currentTaskId = null; // Store the current task ID
 
+      document.addEventListener("DOMContentLoaded", showTasks);
+
+      // Fetch and display tasks
       async function showTasks() {
         try {
           const response = await fetch("/tasks");
@@ -145,8 +148,22 @@
         }
       }
 
+      // Show task details in sidebar, toggle visibility
       async function showTaskDetailsAndRightSidebar(taskId) {
-        currentTaskId = taskId; // Store task ID
+        const rightSidebar = document.getElementById("sidebar-right");
+
+        // If the same task is clicked, toggle sidebar closed
+        if (
+          taskId === currentTaskId &&
+          rightSidebar.classList.contains("active")
+        ) {
+          toggleRightSidebar(false);
+          currentTaskId = null;
+          return;
+        }
+
+        // Set new task ID and populate sidebar
+        currentTaskId = taskId;
 
         try {
           const response = await fetch(`/task/${taskId}`);
@@ -161,15 +178,29 @@
           document.getElementById("task-end-date").value =
             data.task_end_date || "";
 
-          toggleRightSidebar();
+          toggleRightSidebar(true); // Open sidebar
         } catch (error) {
           console.error("Błąd pobierania szczegółów zadania:", error);
         }
       }
 
+      // Toggle sidebar open/close
+      function toggleRightSidebar(open) {
+        const rightSidebar = document.getElementById("sidebar-right");
+        const content = document.getElementById("mainContent");
+
+        if (open) {
+          rightSidebar.classList.add("active");
+          content.classList.add("shifted-right");
+        } else {
+          rightSidebar.classList.remove("active");
+          content.classList.remove("shifted-right");
+        }
+      }
+
+      // Enable task editing
       function editTask() {
-        const isEditing =
-          document.getElementById("task-name").disabled === false;
+        const isEditing = !document.getElementById("task-name").disabled;
 
         document.getElementById("task-name").disabled = isEditing;
         document.getElementById("task-more").disabled = isEditing;
@@ -185,6 +216,7 @@
           : "block";
       }
 
+      // Save task changes
       async function saveTask() {
         const task_name = document.getElementById("task-name").value || null;
         const task_more = document.getElementById("task-more").value || null;
@@ -194,19 +226,18 @@
         const task_end_date =
           document.getElementById("task-end-date").value || null;
 
-        const updatedTask = {};
-        if (task_name !== null) updatedTask.task_name = task_name;
-        if (task_more !== null) updatedTask.task_more = task_more;
-        if (task_group !== null) updatedTask.task_group = task_group;
-        if (task_end_time !== null) updatedTask.task_end_time = task_end_time;
-        if (task_end_date !== null) updatedTask.task_end_date = task_end_date;
+        const updatedTask = {
+          task_name,
+          task_more,
+          task_group,
+          task_end_time,
+          task_end_date,
+        };
 
         try {
           const response = await fetch(`/task/${currentTaskId}`, {
             method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(updatedTask),
           });
 
@@ -221,16 +252,7 @@
         }
       }
 
-      function toggleRightSidebar() {
-        const rightSidebar = document.getElementById("sidebar-right");
-        const content = document.getElementById("mainContent");
-
-        rightSidebar.classList.toggle("active");
-        content.classList.toggle("shifted-right");
-      }
-
-      document.addEventListener("DOMContentLoaded", showTasks);
-
+      // Add new task
       async function addTask(event) {
         event.preventDefault();
 
@@ -239,16 +261,14 @@
         try {
           const response = await fetch("/task", {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ task_name: taskName }),
           });
 
           if (response.ok) {
             console.log("Zadanie zostało dodane.");
             document.getElementById("new-task-name").value = "";
-            showTasks(); // Refreshes the task list after adding a new task
+            showTasks(); // Refresh task list after adding
           } else {
             console.error("Błąd dodawania zadania.");
           }
@@ -257,14 +277,13 @@
         }
       }
 
+      // Delete task with confirmation modal
       function deleteTask() {
-        // Pokaż modal potwierdzenia usunięcia
         const deleteConfirmationModal = new bootstrap.Modal(
           document.getElementById("deleteConfirmationModal")
         );
         deleteConfirmationModal.show();
 
-        // Obsłuż kliknięcie przycisku "Usuń" w modalu
         document.getElementById("confirmDeleteButton").onclick =
           async function () {
             try {
@@ -274,9 +293,9 @@
 
               if (response.ok) {
                 console.log("Zadanie zostało usunięte.");
-                toggleRightSidebar(); // Zamknij sidebar po usunięciu
-                showTasks(); // Odśwież listę zadań
-                deleteConfirmationModal.hide(); // Zamknij modal
+                toggleRightSidebar(false); // Close sidebar after deletion
+                showTasks(); // Refresh task list
+                deleteConfirmationModal.hide(); // Close modal
               } else {
                 console.error("Błąd usuwania zadania.");
               }
