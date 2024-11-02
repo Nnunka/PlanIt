@@ -1,125 +1,17 @@
-/* Stylizacja lewego sidebar */
-.sidebar-left {
-  width: 15%;
-  height: 100vh;
-  background-color: #f8f9fa;
-  position: fixed;
-  top: 56px; /* Wysokość navbaru */
-  left: 0;
-  padding-top: 1rem;
-  padding-left: 1rem;
-}
-
-/* Stylizacja prawego sidebar */
-.sidebar-right {
-  width: 0;
-  height: 100vh;
-  background-color: #f8f9fa;
-  position: fixed;
-  top: 56px; /* Wysokość navbaru */
-  right: 0;
-  overflow-x: hidden;
-  transition: width 0.3s ease;
-}
-
-/* Wyświetlanie prawego sidebar po rozszerzeniu */
-.sidebar-right.active {
-  width: 20%; /* Docelowa szerokość po aktywacji */
-}
-
-/* Stylizacja zawartości prawego sidebar */
-.sidebar-right-content {
-  padding: 1rem;
-  opacity: 1;
-  transition: opacity 0.3s ease;
-}
-
-/* Ukrywanie zawartości prawego sidebar, gdy jest zamknięty */
-.sidebar-right:not(.active) .sidebar-right-content {
-  opacity: 0;
-  pointer-events: none; /* Zapobiega interakcji z niewidoczną zawartością */
-  transition: opacity 0.3s ease; /* Opóźnienie przy zamykaniu */
-}
-
-/* Stylizacja formularza w prawym sidebar */
-.sidebar-right-content h4 {
-  margin-bottom: 1rem;
-}
-
-.sidebar-right-content .form-group {
-  margin-bottom: 1rem;
-}
-
-.sidebar-right-content label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-}
-
-.sidebar-right-content input[type="text"],
-.sidebar-right-content input[type="time"],
-.sidebar-right-content input[type="date"],
-.sidebar-right-content textarea {
-  width: 100%;
-  padding: 0.5rem;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  resize: none; /* Zapobiega zmiany rozmiaru tekstarea */
-}
-
-/* Stylizacja przycisków */
-#edit-button,
-#save-button,
-#delete-button {
-  width: 100%;
-  padding: 0.5rem;
-  font-size: 1rem;
-  margin-top: 0.5rem;
-  cursor: pointer;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  transition: background-color 0.3s ease;
-}
-
-#edit-button {
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-}
-
-#save-button {
-  background-color: #28a745;
-  color: white;
-  border: none;
-  border-radius: 4px;
-}
-
-#delete-button {
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  border-radius: 4px;
-}
-
-/* Dopasowanie treści głównej */
 .content {
-  margin-left: 15%; /* Przesunięcie treści o szerokość lewego sidebar */
+  margin-left: 15%; /* przesunięcie main o szerokość lewego sidebar */
   padding: 1rem;
-  margin-top: 56px; /* Wysokość navbaru */
+  margin-top: 56px; /* wysokość navbaru */
   transition: margin-right 0.3s ease;
 }
 
-/* Przesunięcie treści w lewo przy aktywnym prawym sidebar */
+/* przesunięcie main w lewo przy aktywnym prawym sidebar */
 .content.shifted-right {
-  margin-right: 20%; /* Przesunięcie o szerokość prawego sidebar */
+  margin-right: 20%;
 }
 
-/* Stylizacja pozycji listy zadań */
 .task-item {
-  cursor: pointer;
+  cursor: default;
   padding: 10px;
   border-bottom: 1px solid #ddd;
 }
