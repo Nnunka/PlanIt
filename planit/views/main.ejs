@@ -13,7 +13,8 @@
 
   <body>
     <!--navbar-->
-    <%- include('partials/navbar.ejs') %>
+    <%- include('partials/navbar.ejs') %> <%-
+    include('partials/deleteTaskModal') %>
 
     <!--left sidebar-->
     <div class="sidebar-left">
@@ -285,48 +286,6 @@
           };
       }
     </script>
-
-    <!-- Modal Potwierdzenia Usunięcia -->
-    <div
-      class="modal fade"
-      id="deleteConfirmationModal"
-      tabindex="-1"
-      aria-labelledby="deleteConfirmationModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="deleteConfirmationModalLabel">
-              Potwierdzenie usunięcia
-            </h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Zamknij"
-            ></button>
-          </div>
-          <div class="modal-body">Czy na pewno chcesz usunąć to zadanie?</div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              Anuluj
-            </button>
-            <button
-              type="button"
-              class="btn btn-danger"
-              id="confirmDeleteButton"
-            >
-              Usuń
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <script src="/js/logout.js"></script>
     <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
