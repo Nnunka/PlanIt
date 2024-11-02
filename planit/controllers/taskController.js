@@ -25,7 +25,8 @@ exports.getTaskDetails = (req, res) => {
     } else if (results.length === 0) {
       res.status(404).json({ error: "Task not found" });
     } else {
-      res.json(results[0]); // Return the first result as the task details
+      console.log("Task ID:", req.params.taskId);
+      res.json(results[0]);
     }
   });
 };
@@ -46,6 +47,11 @@ exports.updateTask = (req, res) => {
         res.status(500).json({ error: "Server error" });
       } else {
         res.status(200).json({ message: "Task updated successfully" });
+        console.log(
+          "Zadanie zaktualizowano. Task ID:",
+          req.params.taskId,
+          req.body
+        );
       }
     }
   );
