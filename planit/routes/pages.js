@@ -48,4 +48,7 @@ router.post("/task", authenticateToken, taskController.addTask);
 //usuwanie zadań
 router.delete("/task/:taskId", authenticateToken, taskController.deleteTask);
 
+//scieżka do grupy zadania
+router.get("/tasks/groups", taskController.getTaskGroups);
+
 module.exports = router;

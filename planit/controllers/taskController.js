@@ -31,6 +31,20 @@ exports.getTaskDetails = (req, res) => {
   });
 };
 
+exports.getTaskGroups = (req, res) => {
+  const query =
+    "SELECT DISTINCT task_group FROM tasks WHERE task_group IS NOT NULL";
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Błąd pobierania grup zadań:", err);
+      res.status(500).json({ error: "Błąd serwera" });
+    } else {
+      const groups = results.map((row) => row.task_group);
+      res.json(groups);
+    }
+  });
+};
+
 exports.updateTask = (req, res) => {
   const taskId = req.params.taskId;
   const { task_name, task_more, task_group, task_end_time, task_end_date } =

@@ -12,7 +12,22 @@ async function showTasks() {
       taskItem.classList.add("task-item");
       taskItem.innerText = task.task_name;
 
-      taskItem.onclick = () => showTaskDetailsAndRightSidebar(task.task_id);
+      taskItem.onclick = () => {
+        const isAlreadyActive = taskItem.classList.contains("active");
+
+        // Usuń klasę 'active' z wszystkich elementów zadań
+        document.querySelectorAll(".task-item").forEach((item) => {
+          item.classList.remove("active");
+        });
+
+        // Jeśli element nie był aktywny, dodajemy klasę 'active'
+        if (!isAlreadyActive) {
+          taskItem.classList.add("active");
+        }
+
+        // Wywołujemy funkcję zarządzającą sidebar-em i szczegółami zadania
+        showTaskDetailsAndRightSidebar(task.task_id);
+      };
 
       taskList.appendChild(taskItem);
     });
@@ -64,6 +79,18 @@ function editTask() {
     : "block";
 }
 
+//resetowanie trybu edycji zadań (sidebar)
+function resetEditMode() {
+  document.getElementById("task-name").disabled = true;
+  document.getElementById("task-more").disabled = true;
+  document.getElementById("task-group").disabled = true;
+  document.getElementById("task-end-time").disabled = true;
+  document.getElementById("task-end-date").disabled = true;
+
+  document.getElementById("edit-button").style.display = "block";
+  document.getElementById("save-button").style.display = "none";
+}
+
 //potwierdzenie zmian w edycji zadania (sidebar)
 async function saveTask() {
   const task_name = document.getElementById("task-name").value || null;
@@ -89,7 +116,7 @@ async function saveTask() {
 
     if (response.ok) {
       console.log("Task updated successfully");
-      editTask();
+      editTask(); // Przełączenie trybu edycji
     } else {
       console.error("Error updating task");
     }

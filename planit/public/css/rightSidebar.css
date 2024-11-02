@@ -37,11 +37,13 @@
 .sidebar-right-content input[type="text"],
 .sidebar-right-content input[type="time"],
 .sidebar-right-content input[type="date"],
+.sidebar-right-content select,
 .sidebar-right-content textarea {
   width: 100%;
   padding: 0.5rem;
   font-size: 1rem;
   border: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 4px;
   resize: none; /* zapobiega zmiany rozmiaru tekstarea */
 }
@@ -58,6 +60,7 @@
   border: none;
   border-radius: 4px;
   transition: background-color 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 #edit-button {
