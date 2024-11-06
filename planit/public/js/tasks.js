@@ -194,6 +194,7 @@ function deleteTask() {
         console.log("Zadanie zostało usunięte.");
         toggleRightSidebar(false); //zamyka sidebar
         showTasks(); //odświeża listę zadań po usunięciu
+        loadTaskGroups(); // odświerzanie grupy w lewym sidebarze
         deleteConfirmationModal.hide();
       } else {
         console.error("Błąd usuwania zadania.");
