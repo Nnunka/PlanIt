@@ -8,11 +8,44 @@ async function showTasks() {
     taskList.innerHTML = "";
 
     tasks.forEach((task) => {
+      // Tworzenie kontenera dla zadania
       const taskItem = document.createElement("div");
       taskItem.classList.add("task-item");
       taskItem.innerText = task.task_name;
 
-      taskItem.onclick = () => {
+      // Dodanie klasy 'completed' jeśli zadanie jest wykonane
+      if (task.task_completed) {
+        taskItem.classList.add("completed");
+      }
+
+      // Checkbox do oznaczania zadania jako wykonanego
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.checked = task.task_completed === 1;
+      checkbox.classList.add("task-checkbox");
+
+      // Obsługa zmiany statusu zadania po zaznaczeniu checkboxa
+      checkbox.onclick = async (event) => {
+        event.stopPropagation(); // Zapobiega aktywowaniu taskItem onclick
+        const task_completed = checkbox.checked ? 1 : 0;
+        await updateTaskStatus(task.task_id, task_completed);
+
+        // Aktualizacja stylu zadania po zmianie statusu
+        if (task_completed) {
+          taskItem.classList.add("completed");
+        } else {
+          taskItem.classList.remove("completed");
+        }
+      };
+
+      // Dodanie checkboxa po prawej stronie taskItem
+      taskItem.appendChild(checkbox);
+
+      // Obsługa aktywacji zadania i otwierania szczegółów w sidebarze
+      taskItem.onclick = (event) => {
+        // Sprawdzenie, czy kliknięto checkbox
+        if (event.target === checkbox) return;
+
         const isAlreadyActive = taskItem.classList.contains("active");
 
         // Usuń klasę 'active' z wszystkich elementów zadań
@@ -29,10 +62,28 @@ async function showTasks() {
         showTaskDetailsAndRightSidebar(task.task_id);
       };
 
+      // Dodanie elementu zadania do listy
       taskList.appendChild(taskItem);
     });
   } catch (error) {
     console.error("Błąd pobierania zadań:", error);
+  }
+}
+
+// Funkcja do aktualizacji statusu zadania w bazie danych
+async function updateTaskStatus(taskId, task_completed) {
+  try {
+    const response = await fetch(`/task/${taskId}/status`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ task_completed }),
+    });
+
+    if (!response.ok) {
+      console.error("Błąd aktualizacji statusu zadania");
+    }
+  } catch (error) {
+    console.error("Błąd połączenia z serwerem:", error);
   }
 }
 

@@ -16,16 +16,27 @@
 }
 
 .task-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   background-color: #f5f5f5;
   padding: 15px;
   border-radius: 8px;
   font-size: 1.1em;
-  transition: background-color #cfe2ff, box-shadow 0.3s;
+  transition: background-color 0.3s, box-shadow 0.3s;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+}
+
+.task-item.completed {
+  text-decoration: line-through;
+  color: #777;
+}
+
+.task-checkbox {
+  width: 20px; /* Ustawienie większego rozmiaru */
+  height: 20px;
+  cursor: pointer;
 }
 
 .task-item:hover {
@@ -35,6 +46,11 @@
 .task-item.active {
   background-color: #cfe2ff;
   font-weight: bold;
+}
+
+.task-item.completed {
+  text-decoration: line-through;
+  color: #777;
 }
 
 #add-task-form {

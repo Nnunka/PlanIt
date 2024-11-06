@@ -51,4 +51,11 @@ router.delete("/task/:taskId", authenticateToken, taskController.deleteTask);
 //scieżka do grupy zadania
 router.get("/tasks/groups", taskController.getTaskGroups);
 
+//dodanie zadania jako zakończone
+router.put(
+  "/task/:taskId/status",
+  authenticateToken,
+  taskController.updateTaskStatus
+);
+
 module.exports = router;

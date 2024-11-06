@@ -115,3 +115,18 @@ exports.deleteTask = (req, res) => {
     }
   });
 };
+
+exports.updateTaskStatus = (req, res) => {
+  const taskId = req.params.taskId;
+  const { task_completed } = req.body;
+
+  const query = "UPDATE tasks SET task_completed = ? WHERE task_id = ?";
+  db.query(query, [task_completed, taskId], (err, result) => {
+    if (err) {
+      console.error("Error updating task status:", err);
+      res.status(500).json({ error: "Server error" });
+    } else {
+      res.status(200).json({ message: "Task status updated successfully" });
+    }
+  });
+};
