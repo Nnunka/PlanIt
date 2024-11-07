@@ -73,7 +73,7 @@ exports.updateTask = (req, res) => {
 };
 
 exports.addTask = (req, res) => {
-  const { task_name } = req.body;
+  const { task_name, task_group } = req.body; // Pobieranie task_group
   const task_user_id = req.user.user_id;
 
   if (!task_name || !task_user_id) {
@@ -82,21 +82,27 @@ exports.addTask = (req, res) => {
       .json({ error: "Brak nazwy zadania lub ID użytkownika." });
   }
 
-  const query = "INSERT INTO tasks (task_name, task_user_id) VALUES (?, ?)";
-  db.query(query, [task_name, task_user_id], (err, result) => {
-    if (err) {
-      console.error("Błąd dodawania zadania:", err);
-      res.status(500).json({ error: "Błąd serwera" });
-    } else {
-      res.status(201).json({ message: "Zadanie dodane pomyślnie" });
-      console.log(
-        "Dodano nowe zadanie:",
-        req.body,
-        "User ID:",
-        req.user.user_id
-      );
+  // Jeśli task_group jest puste, przypisujemy NULL
+  const query =
+    "INSERT INTO tasks (task_name, task_user_id, task_group) VALUES (?, ?, ?)";
+  db.query(
+    query,
+    [task_name, task_user_id, task_group || null],
+    (err, result) => {
+      if (err) {
+        console.error("Błąd dodawania zadania:", err);
+        res.status(500).json({ error: "Błąd serwera" });
+      } else {
+        res.status(201).json({ message: "Zadanie dodane pomyślnie" });
+        console.log(
+          "Dodano nowe zadanie:",
+          req.body,
+          "User ID:",
+          req.user.user_id
+        );
+      }
     }
-  });
+  );
 };
 
 exports.deleteTask = (req, res) => {

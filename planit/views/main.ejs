@@ -19,7 +19,6 @@
     <%-include('partials/navbar.ejs')%>
 
     <!--left sidebar-->
-    <!-- Left Sidebar -->
     <div
       id="sidebar-left"
       class="sidebar-left shadow-sm"
@@ -28,9 +27,7 @@
       <h4>Grupy zadań</h4>
       <ul id="task-groups-list" class="nav flex-column">
         <li class="nav-item">
-          <a class="nav-link" href="#" onclick="showTasks()"
-            >Wszystkie zadania</a
-          >
+          <a class="nav-link" href="/main">Wszystkie zadania</a>
         </li>
       </ul>
     </div>
@@ -76,18 +73,7 @@
           const groups = await response.json();
 
           const taskGroupsList = document.getElementById("task-groups-list");
-          taskGroupsList.innerHTML = ""; // Wyczyść listę przed dodaniem nowych grup
-
-          // Dodaj opcję "Wszystkie zadania" na początku
-          const allTasksItem = document.createElement("li");
-          allTasksItem.classList.add("nav-item");
-          const allTasksLink = document.createElement("a");
-          allTasksLink.classList.add("nav-link");
-          allTasksLink.href = "#";
-          allTasksLink.textContent = "Wszystkie zadania";
-          allTasksLink.onclick = () => showTasks(); // Wyświetl wszystkie zadania
-          allTasksItem.appendChild(allTasksLink);
-          taskGroupsList.appendChild(allTasksItem);
+          taskGroupsList.innerHTML = "";
 
           groups.forEach((group) => {
             const listItem = document.createElement("li");
@@ -98,21 +84,23 @@
             link.href = "#";
             link.textContent = group;
 
-            // Kliknięcie na grupę wywołuje filtrowanie zadań
-            link.onclick = () => showTasks(group);
+            link.onclick = (event) => {
+              event.preventDefault();
+              showTasks(group); // Wywołanie `showTasks` z nazwą grupy
+            };
 
             listItem.appendChild(link);
             taskGroupsList.appendChild(listItem);
           });
-
-          console.log("Sidebar odświeżony z nowymi grupami:", groups);
         } catch (error) {
           console.error("Błąd pobierania grup zadań:", error);
         }
       }
 
-      // Wywołaj odświeżenie grup sidebaru po załadowaniu dokumentu
-      document.addEventListener("DOMContentLoaded", loadTaskGroups);
+      document.addEventListener("DOMContentLoaded", () => {
+        showTasks(); // Wyświetla wszystkie zadania na początku
+        loadTaskGroups();
+      });
     </script>
 
     <script src="/js/logout.js"></script>
