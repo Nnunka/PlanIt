@@ -58,4 +58,11 @@ router.put(
   taskController.updateTaskStatus
 );
 
+//trasa do pobierania zadań na podstawie grupy
+router.get(
+  "/tasks/group/:group",
+  authenticateToken,
+  taskController.getTasksByGroup
+);
+
 module.exports = router;

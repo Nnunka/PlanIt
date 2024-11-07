@@ -130,3 +130,19 @@ exports.updateTaskStatus = (req, res) => {
     }
   });
 };
+
+exports.getTasksByGroup = (req, res) => {
+  const userId = req.user.user_id;
+  const group = req.params.group;
+
+  const query =
+    "SELECT task_id, task_name, task_completed FROM tasks WHERE task_user_id = ? AND task_group = ?";
+  db.query(query, [userId, group], (err, results) => {
+    if (err) {
+      console.error("Błąd pobierania zadań po grupie:", err);
+      res.status(500).json({ error: "Błąd serwera" });
+    } else {
+      res.json({ tasks: results });
+    }
+  });
+};

@@ -1,36 +1,32 @@
-//wyświetlenie zadań na stronie głównej
-async function showTasks() {
+// Funkcja do wyświetlania zadań, opcjonalnie filtrująca po grupie
+async function showTasks(group = null) {
   try {
-    const response = await fetch("/tasks");
+    const url = group ? `/tasks/group/${encodeURIComponent(group)}` : "/tasks";
+    const response = await fetch(url);
     const data = await response.json();
     const tasks = data.tasks;
     const taskList = document.getElementById("task-list");
     taskList.innerHTML = "";
 
     tasks.forEach((task) => {
-      // Tworzenie kontenera dla zadania
       const taskItem = document.createElement("div");
       taskItem.classList.add("task-item");
       taskItem.innerText = task.task_name;
 
-      // Dodanie klasy 'completed' jeśli zadanie jest wykonane
       if (task.task_completed) {
         taskItem.classList.add("completed");
       }
 
-      // Checkbox do oznaczania zadania jako wykonanego
       const checkbox = document.createElement("input");
       checkbox.type = "checkbox";
       checkbox.checked = task.task_completed === 1;
       checkbox.classList.add("task-checkbox");
 
-      // Obsługa zmiany statusu zadania po zaznaczeniu checkboxa
       checkbox.onclick = async (event) => {
-        event.stopPropagation(); // Zapobiega aktywowaniu taskItem onclick
+        event.stopPropagation();
         const task_completed = checkbox.checked ? 1 : 0;
         await updateTaskStatus(task.task_id, task_completed);
 
-        // Aktualizacja stylu zadania po zmianie statusu
         if (task_completed) {
           taskItem.classList.add("completed");
         } else {
@@ -38,36 +34,34 @@ async function showTasks() {
         }
       };
 
-      // Dodanie checkboxa po prawej stronie taskItem
       taskItem.appendChild(checkbox);
 
-      // Obsługa aktywacji zadania i otwierania szczegółów w sidebarze
       taskItem.onclick = (event) => {
-        // Sprawdzenie, czy kliknięto checkbox
         if (event.target === checkbox) return;
 
         const isAlreadyActive = taskItem.classList.contains("active");
 
-        // Usuń klasę 'active' z wszystkich elementów zadań
         document.querySelectorAll(".task-item").forEach((item) => {
           item.classList.remove("active");
         });
 
-        // Jeśli element nie był aktywny, dodajemy klasę 'active'
         if (!isAlreadyActive) {
           taskItem.classList.add("active");
         }
 
-        // Wywołujemy funkcję zarządzającą sidebar-em i szczegółami zadania
         showTaskDetailsAndRightSidebar(task.task_id);
       };
 
-      // Dodanie elementu zadania do listy
       taskList.appendChild(taskItem);
     });
   } catch (error) {
     console.error("Błąd pobierania zadań:", error);
   }
+}
+
+// Funkcja do obsługi kliknięcia na grupę
+function filterTasksByGroup(group) {
+  showTasks(group);
 }
 
 // Funkcja do aktualizacji statusu zadania w bazie danych
@@ -205,4 +199,5 @@ function deleteTask() {
   };
 }
 
-document.addEventListener("DOMContentLoaded", showTasks);
+// Wywołanie `showTasks()` bez filtra przy pierwszym załadowaniu
+document.addEventListener("DOMContentLoaded", () => showTasks());
