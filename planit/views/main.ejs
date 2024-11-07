@@ -27,7 +27,8 @@
       <h4>Grupy zadań</h4>
       <ul id="task-groups-list" class="nav flex-column">
         <li class="nav-item">
-          <a class="nav-link" href="/main">Wszystkie zadania</a>
+          <!-- Dodajemy id do linku -->
+          <a class="nav-link" href="#" id="all-tasks-link">Wszystkie zadania</a>
         </li>
       </ul>
     </div>
@@ -73,8 +74,26 @@
           const groups = await response.json();
 
           const taskGroupsList = document.getElementById("task-groups-list");
-          taskGroupsList.innerHTML = "";
+          taskGroupsList.innerHTML = ""; // Wyczyść listę przed dodaniem nowych grup
 
+          // Dodaj link do wszystkich zadań na początku
+          const allTasksLink = document.createElement("li");
+          allTasksLink.classList.add("nav-item");
+          const allTasksAnchor = document.createElement("a");
+          allTasksAnchor.classList.add("nav-link");
+          allTasksAnchor.href = "#";
+          allTasksAnchor.textContent = "Wszystkie zadania";
+
+          allTasksAnchor.onclick = (event) => {
+            event.preventDefault();
+            currentGroup = null; // Resetuje filtr grupy
+            showTasks(); // Wyświetla wszystkie zadania
+          };
+
+          allTasksLink.appendChild(allTasksAnchor);
+          taskGroupsList.appendChild(allTasksLink);
+
+          // Dodaj poszczególne grupy zadań do listy
           groups.forEach((group) => {
             const listItem = document.createElement("li");
             listItem.classList.add("nav-item");
@@ -86,6 +105,7 @@
 
             link.onclick = (event) => {
               event.preventDefault();
+              currentGroup = group; // Ustawiamy `currentGroup` na nazwę klikniętej grupy
               showTasks(group); // Wywołanie `showTasks` z nazwą grupy
             };
 
@@ -101,6 +121,12 @@
         showTasks(); // Wyświetla wszystkie zadania na początku
         loadTaskGroups();
       });
+
+      document.getElementById("all-tasks-link").onclick = (event) => {
+        event.preventDefault();
+        currentGroup = null; // Resetujemy grupę na `null`, aby pokazać wszystkie zadania
+        showTasks(); // Wywołaj `showTasks` bez argumentów, aby wyświetlić wszystkie zadania
+      };
     </script>
 
     <script src="/js/logout.js"></script>
