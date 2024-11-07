@@ -1,6 +1,10 @@
+let currentGroup = null;
+
 async function showTasks(group = null) {
+  currentGroup = group; // Ustawia globalną zmienną na wybraną grupę
+
   try {
-    const url = group ? `/tasks/group/${group}` : "/tasks";
+    const url = group ? `/tasks/group/${encodeURIComponent(group)}` : "/tasks";
     const response = await fetch(url);
     const data = await response.json();
     const tasks = data.tasks;
@@ -44,9 +48,7 @@ async function showTasks(group = null) {
           item.classList.remove("active");
         });
 
-        if (!isAlreadyActive) {
-          taskItem.classList.add("active");
-        }
+        if (!isAlreadyActive) taskItem.classList.add("active");
 
         showTaskDetailsAndRightSidebar(task.task_id);
       };
@@ -85,19 +87,18 @@ async function addTask(event) {
   event.preventDefault();
 
   const taskName = document.getElementById("new-task-name").value;
-  const taskGroup = currentGroup || null;
 
   try {
     const response = await fetch("/task", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ task_name: taskName, task_group: taskGroup }),
+      body: JSON.stringify({ task_name: taskName, task_group: currentGroup }),
     });
 
     if (response.ok) {
       console.log("Zadanie zostało dodane.");
       document.getElementById("new-task-name").value = "";
-      showTasks(currentGroup); // Odśwież listę zadań po dodaniu
+      showTasks(currentGroup); // Odświeża listę zadań dla aktualnej grupy
     } else {
       console.error("Błąd dodawania zadania.");
     }
@@ -162,7 +163,8 @@ async function saveTask() {
     if (response.ok) {
       console.log("Task updated successfully");
       editTask(); // Przełączenie trybu edycji
-      showTasks(); // odświerzanie grupy w lewym sidebarze
+      loadTaskGroups(); // odświerzanie grupy w lewym sidebarze
+      showTasks(currentGroup);
     } else {
       console.error("Error updating task");
     }
