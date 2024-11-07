@@ -2,6 +2,13 @@ async function taskGroupOptions(selectedGroup = null) {
   const groupSelect = document.getElementById("task-group");
   groupSelect.innerHTML = "";
 
+  // Dodaj opcję pustą, reprezentującą brak grupy
+  const emptyOption = document.createElement("option");
+  emptyOption.value = "";
+  emptyOption.textContent = "Brak grupy";
+  groupSelect.appendChild(emptyOption);
+
+  // Dodaj opcję "Dodaj nową grupę"
   const addNewOption = document.createElement("option");
   addNewOption.value = "add_new";
   addNewOption.textContent = "Dodaj nową grupę";
@@ -15,12 +22,15 @@ async function taskGroupOptions(selectedGroup = null) {
       const option = document.createElement("option");
       option.value = group;
       option.textContent = group;
+
       if (group === selectedGroup) {
         option.selected = true;
       }
+
       groupSelect.appendChild(option);
     });
 
+    // Wywołanie modala dla opcji "Dodaj nową grupę"
     groupSelect.onchange = function () {
       if (groupSelect.value === "add_new") {
         document.getElementById("new-group-name").value = "";
