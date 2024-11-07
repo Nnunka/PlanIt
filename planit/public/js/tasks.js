@@ -162,7 +162,7 @@ async function saveTask() {
     if (response.ok) {
       console.log("Task updated successfully");
       editTask(); // Przełączenie trybu edycji
-      loadTaskGroups(); // odświerzanie grupy w lewym sidebarze
+      showTasks(); // odświerzanie grupy w lewym sidebarze
     } else {
       console.error("Error updating task");
     }
