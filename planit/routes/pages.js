@@ -65,4 +65,7 @@ router.get(
   taskController.getTasksByGroup
 );
 
+//trasa do pobierania tasków 'na dziś'
+router.get("/tasks/today", authenticateToken, taskController.getTodayTasks);
+
 module.exports = router;

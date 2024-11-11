@@ -152,3 +152,22 @@ exports.getTasksByGroup = (req, res) => {
     }
   });
 };
+
+exports.getTodayTasks = (req, res) => {
+  const userId = req.user.user_id;
+  const todayDate = new Date().toISOString().split("T")[0]; // Pobiera dzisiejszą datę w formacie YYYY-MM-DD
+
+  const query = `
+    SELECT task_id, task_name, task_completed, task_end_date
+    FROM tasks
+    WHERE task_user_id = ? AND task_end_date = ? AND task_completed = 0
+  `;
+  db.query(query, [userId, todayDate], (err, results) => {
+    if (err) {
+      console.error("Błąd pobierania zadań na dziś:", err);
+      res.status(500).json({ error: "Błąd serwera" });
+    } else {
+      res.json({ tasks: results });
+    }
+  });
+};

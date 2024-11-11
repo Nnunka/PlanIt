@@ -25,12 +25,7 @@
       style="background-color: #f5f5f5"
     >
       <h4>Grupy zadań</h4>
-      <ul id="task-groups-list" class="nav flex-column">
-        <li class="nav-item">
-          <!-- Dodajemy id do linku -->
-          <a class="nav-link" href="#" id="all-tasks-link">Wszystkie zadania</a>
-        </li>
-      </ul>
+      <ul id="task-groups-list" class="nav flex-column"></ul>
     </div>
 
     <!--right sidebar-->
@@ -40,6 +35,9 @@
     <div id="main-content" class="content">
       <div class="container mt-4">
         <h2>Twoja lista zadań</h2>
+
+        <div id="today-tasks" class="mt-3"></div>
+
         <div id="task-list" class="mt-3"></div>
 
         <div id="add-task-form" class="task-item">
@@ -116,11 +114,6 @@
           console.error("Błąd pobierania grup zadań:", error);
         }
       }
-
-      document.addEventListener("DOMContentLoaded", () => {
-        showTasks(); // Wyświetla wszystkie zadania na początku
-        loadTaskGroups();
-      });
 
       document.getElementById("all-tasks-link").onclick = (event) => {
         event.preventDefault();

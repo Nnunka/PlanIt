@@ -1,62 +1,123 @@
 let currentGroup = null;
 
 async function showTasks(group = null) {
-  currentGroup = group; // Ustawia globalną zmienną na wybraną grupę
+  currentGroup = group;
+
+  const taskList = document.getElementById("task-list");
+  taskList.innerHTML = ""; // Czyści zawartość listy zadań
+
+  if (!group) {
+    // Wyświetl zadania na dziś tylko wtedy, gdy przeglądamy wszystkie zadania
+    await showTodayTasks();
+  } else {
+    // Jeśli przeglądamy z wybraną grupą, ukryj sekcję z zadaniami na dziś
+    document.getElementById("today-tasks").innerHTML = "";
+  }
 
   try {
+    const header = document.createElement("h3");
+    header.textContent = group
+      ? `Zadania z grupy: ${group}`
+      : "Wszystkie zadania";
+    taskList.appendChild(header);
+
     const url = group ? `/tasks/group/${encodeURIComponent(group)}` : "/tasks";
     const response = await fetch(url);
     const data = await response.json();
     const tasks = data.tasks;
-    const taskList = document.getElementById("task-list");
-    taskList.innerHTML = "";
 
-    tasks.forEach((task) => {
-      const taskItem = document.createElement("div");
-      taskItem.classList.add("task-item");
-      taskItem.innerText = task.task_name;
-
-      if (task.task_completed) {
-        taskItem.classList.add("completed");
-      }
-
-      const checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
-      checkbox.checked = task.task_completed === 1;
-      checkbox.classList.add("task-checkbox");
-
-      checkbox.onclick = async (event) => {
-        event.stopPropagation();
-        const task_completed = checkbox.checked ? 1 : 0;
-        await updateTaskStatus(task.task_id, task_completed);
-
-        if (task_completed) {
-          taskItem.classList.add("completed");
-        } else {
-          taskItem.classList.remove("completed");
-        }
-      };
-
-      taskItem.appendChild(checkbox);
-
-      taskItem.onclick = (event) => {
-        if (event.target === checkbox) return;
-
-        const isAlreadyActive = taskItem.classList.contains("active");
-
-        document.querySelectorAll(".task-item").forEach((item) => {
-          item.classList.remove("active");
-        });
-
-        if (!isAlreadyActive) taskItem.classList.add("active");
-
-        showTaskDetailsAndRightSidebar(task.task_id);
-      };
-
-      taskList.appendChild(taskItem);
-    });
+    tasks.forEach((task) => createTaskElement(task, taskList));
   } catch (error) {
     console.error("Błąd pobierania zadań:", error);
+  }
+}
+
+// Funkcja do wyświetlenia zadań na dziś
+async function showTodayTasks() {
+  const todayTasksContainer = document.getElementById("today-tasks");
+  todayTasksContainer.innerHTML = ""; // Czyści kontener zadań na dziś
+
+  try {
+    const response = await fetch("/tasks/today");
+    const data = await response.json();
+    const tasks = data.tasks;
+
+    if (tasks.length > 0) {
+      const header = document.createElement("h3");
+      header.textContent = "Zadania na dziś:";
+      todayTasksContainer.appendChild(header);
+
+      tasks.forEach((task) => createTaskElement(task, todayTasksContainer));
+    } else {
+      const noTasksMessage = document.createElement("p");
+      noTasksMessage.textContent = "Brak zadań na dziś :)";
+      todayTasksContainer.appendChild(noTasksMessage);
+    }
+  } catch (error) {
+    console.error("Błąd pobierania zadań na dziś:", error);
+  }
+}
+
+// Funkcja tworząca element zadania z interakcjami
+function createTaskElement(task, container) {
+  const taskItem = document.createElement("div");
+  taskItem.classList.add("task-item");
+  taskItem.innerText = task.task_name;
+
+  if (task.task_completed) {
+    taskItem.classList.add("completed");
+  }
+
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.checked = task.task_completed === 1;
+  checkbox.classList.add("task-checkbox");
+
+  checkbox.onclick = async (event) => {
+    event.stopPropagation();
+    const task_completed = checkbox.checked ? 1 : 0;
+    await updateTaskStatus(task.task_id, task_completed);
+
+    if (task_completed) {
+      taskItem.classList.add("completed");
+    } else {
+      taskItem.classList.remove("completed");
+    }
+  };
+
+  taskItem.appendChild(checkbox);
+
+  taskItem.onclick = (event) => {
+    if (event.target === checkbox) return;
+
+    const isAlreadyActive = taskItem.classList.contains("active");
+
+    document.querySelectorAll(".task-item").forEach((item) => {
+      item.classList.remove("active");
+    });
+
+    if (!isAlreadyActive) taskItem.classList.add("active");
+
+    showTaskDetailsAndRightSidebar(task.task_id);
+  };
+
+  container.appendChild(taskItem);
+}
+
+// Funkcja do aktualizacji statusu zadania w bazie danych
+async function updateTaskStatus(taskId, task_completed) {
+  try {
+    const response = await fetch(`/task/${taskId}/status`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ task_completed }),
+    });
+
+    if (!response.ok) {
+      console.error("Błąd aktualizacji statusu zadania");
+    }
+  } catch (error) {
+    console.error("Błąd połączenia z serwerem:", error);
   }
 }
 
@@ -202,4 +263,7 @@ function deleteTask() {
 }
 
 // Wywołanie `showTasks()` bez filtra przy pierwszym załadowaniu
-document.addEventListener("DOMContentLoaded", () => showTasks());
+document.addEventListener("DOMContentLoaded", () => {
+  showTasks();
+  loadTaskGroups();
+});
