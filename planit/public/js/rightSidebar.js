@@ -33,24 +33,27 @@ async function showTaskDetailsAndRightSidebar(taskId) {
 
     document.getElementById("task-name").value = data.task_name || "";
     document.getElementById("task-more").value = data.task_more || "";
-    document.getElementById("task-group").value = data.task_group || "";
 
-    // Konwersja daty z uwzględnieniem lokalnej strefy czasowej
-    if (data.task_end_date) {
-      const date = new Date(data.task_end_date);
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
-      const formattedDate = `${year}-${month}-${day}`;
-      document.getElementById("task-end-date").value = formattedDate;
-    } else {
-      document.getElementById("task-end-date").value = ""; // Puste, jeśli brak daty
-    }
+    // Zainicjuj opcje grup, przekazując wybraną grupę
+    await taskGroupOptions(data.task_group || null);
 
+    document.getElementById("task-end-date").value = formatDate(
+      data.task_end_date
+    );
     document.getElementById("task-end-time").value = data.task_end_time || "";
 
     toggleRightSidebar(true);
   } catch (error) {
     console.error("Błąd pobierania szczegółów zadania:", error);
   }
+}
+
+// Funkcja formatująca datę w formacie YYYY-MM-DD
+function formatDate(dateString) {
+  if (!dateString) return "";
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
