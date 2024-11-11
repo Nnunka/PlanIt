@@ -167,7 +167,16 @@ exports.getTodayTasks = (req, res) => {
       console.error("Błąd pobierania zadań na dziś:", err);
       res.status(500).json({ error: "Błąd serwera" });
     } else {
-      res.json({ tasks: results });
+      // Konwersja formatu daty na `dd.mm.yyyy`
+      const formattedResults = results.map((task) => {
+        if (task.task_end_date && task.task_end_date instanceof Date) {
+          const dateString = task.task_end_date.toISOString().split("T")[0];
+          const [year, month, day] = dateString.split("-");
+          task.task_end_date = `${day}.${month}.${year}`; // Zmiana formatu daty na `dd.mm.yyyy`
+        }
+        return task;
+      });
+      res.json({ tasks: formattedResults });
     }
   });
 };
