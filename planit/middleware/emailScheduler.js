@@ -60,7 +60,7 @@ const checkAndSendReminders = () => {
       }
 
       const subject = `Przypomnienie: termin zadania "${task.task_name}" zbliża się`;
-      const message = `Zadanie "${task.task_name}" ma termin: ${formattedDate}${formattedTime}. Upewnij się, że zostało wykonane na czas!`;
+      const message = `Zadanie "${task.task_name}" ma termin: ${formattedDate}${formattedTime}. Upewnij się, że zostanie wykonane na czas!`;
 
       sendDeadlineReminder(task.user_email, subject, message);
     });
