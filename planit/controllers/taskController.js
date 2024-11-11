@@ -3,7 +3,8 @@ const db = require("../config/db");
 exports.getTaskName = (req, res) => {
   const userId = req.user.user_id;
 
-  const query = "SELECT task_id, task_name FROM tasks WHERE task_user_id = ?";
+  const query =
+    "SELECT task_id, task_name, task_completed FROM tasks WHERE task_user_id = ?";
   db.query(query, [userId], (err, results) => {
     if (err) {
       console.error("Błąd pobierania zadań:", err);
@@ -183,7 +184,6 @@ exports.getTodayTasks = (req, res) => {
 
 exports.getUpcomingDeadlines = (req, res) => {
   const userId = req.user.user_id;
-
   // Pobiera zadania, które mają termin dzisiaj lub w najbliższym czasie (np. w ciągu 24 godzin)
   const query = `
     SELECT tasks.task_id, tasks.task_name, tasks.task_end_date, users.email
@@ -192,7 +192,6 @@ exports.getUpcomingDeadlines = (req, res) => {
     WHERE tasks.task_user_id = ? AND tasks.task_completed = 0 
       AND tasks.task_end_date <= DATE_ADD(CURDATE(), INTERVAL 1 DAY)
   `;
-
   db.query(query, [userId], (err, results) => {
     if (err) {
       console.error("Błąd pobierania zadań z nadchodzącym terminem:", err);
