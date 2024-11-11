@@ -68,4 +68,10 @@ router.get(
 //trasa do pobierania tasków 'na dziś'
 router.get("/tasks/today", authenticateToken, taskController.getTodayTasks);
 
+router.get(
+  "/tasks/upcomingDeadlines",
+  authenticateToken,
+  taskController.getUpcomingDeadlines
+);
+
 module.exports = router;

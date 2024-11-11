@@ -180,3 +180,25 @@ exports.getTodayTasks = (req, res) => {
     }
   });
 };
+
+exports.getUpcomingDeadlines = (req, res) => {
+  const userId = req.user.user_id;
+
+  // Pobiera zadania, które mają termin dzisiaj lub w najbliższym czasie (np. w ciągu 24 godzin)
+  const query = `
+    SELECT tasks.task_id, tasks.task_name, tasks.task_end_date, users.email
+    FROM tasks
+    JOIN users ON tasks.task_user_id = users.user_id
+    WHERE tasks.task_user_id = ? AND tasks.task_completed = 0 
+      AND tasks.task_end_date <= DATE_ADD(CURDATE(), INTERVAL 1 DAY)
+  `;
+
+  db.query(query, [userId], (err, results) => {
+    if (err) {
+      console.error("Błąd pobierania zadań z nadchodzącym terminem:", err);
+      res.status(500).json({ error: "Błąd serwera" });
+    } else {
+      res.json({ deadlines: results });
+    }
+  });
+};
