@@ -71,7 +71,12 @@ async function loadSubtasks(taskId) {
 
     data.subtasks.forEach((subtask) => {
       const subtaskItem = document.createElement("div");
-      subtaskItem.classList.add("subtask-item", "d-flex", "align-items-center");
+      subtaskItem.classList.add(
+        "subtask-item",
+        "d-flex",
+        "align-items-center",
+        "mb-2"
+      );
 
       const checkbox = document.createElement("input");
       checkbox.type = "checkbox";
@@ -79,14 +84,23 @@ async function loadSubtasks(taskId) {
       checkbox.classList.add("form-check-input", "me-2");
       checkbox.onchange = async () => {
         await updateSubtaskStatus(subtask.subtask_id, checkbox.checked ? 1 : 0);
+        showTasks(currentGroup); // Aktualizuj pasek postępu na stronie głównej
       };
 
       const label = document.createElement("label");
       label.textContent = subtask.subtask_name;
-      label.classList.add("form-label");
+      label.classList.add("form-label", "flex-grow-1");
+
+      const deleteButton = document.createElement("button");
+      deleteButton.textContent = "Usuń";
+      deleteButton.classList.add("btn", "btn-danger", "btn-sm", "ms-2");
+      deleteButton.onclick = async () => {
+        await deleteSubtask(subtask.subtask_id, taskId);
+      };
 
       subtaskItem.appendChild(checkbox);
       subtaskItem.appendChild(label);
+      subtaskItem.appendChild(deleteButton);
       subtasksList.appendChild(subtaskItem);
     });
   } catch (error) {
@@ -110,6 +124,7 @@ document.getElementById("add-subtask-form").onsubmit = async (e) => {
 
     document.getElementById("new-subtask-name").value = ""; // Wyczyść pole
     loadSubtasks(currentTaskId); // Odśwież listę podzadań
+    showTasks(currentGroup);
   } catch (error) {
     console.error("Błąd dodawania podzadania:", error);
   }
@@ -125,5 +140,19 @@ async function updateSubtaskStatus(subtaskId, completed) {
     });
   } catch (error) {
     console.error("Błąd aktualizacji statusu podzadania:", error);
+  }
+}
+
+async function deleteSubtask(subtaskId) {
+  try {
+    await fetch(`/subtasks/${subtaskId}`, {
+      method: "DELETE",
+    });
+
+    // Po usunięciu podzadania, odśwież listę podzadań i listę zadań
+    loadSubtasks(currentTaskId);
+    showTasks(currentGroup);
+  } catch (error) {
+    console.error("Błąd usuwania podzadania:", error);
   }
 }

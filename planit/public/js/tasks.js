@@ -61,13 +61,41 @@ async function showTodayTasks() {
 // Funkcja tworząca element zadania z interakcjami
 function createTaskElement(task, container) {
   const taskItem = document.createElement("div");
-  taskItem.classList.add("task-item");
-  taskItem.innerText = task.task_name;
+  taskItem.classList.add("task-item", "d-flex", "flex-column");
+  taskItem.style.borderBottom = "1px solid #ddd";
+  taskItem.style.padding = "10px";
+  taskItem.style.marginBottom = "10px";
+
+  // Górna sekcja zadania (nazwa i checkbox)
+  const taskHeader = document.createElement("div");
+  taskHeader.classList.add(
+    "d-flex",
+    "align-items-center",
+    "justify-content-between"
+  );
+
+  // Nazwa zadania
+  const taskName = document.createElement("div");
+  taskName.innerText = task.task_name;
+  taskName.style.cursor = "pointer";
 
   if (task.task_completed) {
-    taskItem.classList.add("completed");
+    taskName.style.textDecoration = "line-through";
   }
 
+  taskName.onclick = () => {
+    const isAlreadyActive = taskItem.classList.contains("active");
+
+    document.querySelectorAll(".task-item").forEach((item) => {
+      item.classList.remove("active");
+    });
+
+    if (!isAlreadyActive) taskItem.classList.add("active");
+
+    showTaskDetailsAndRightSidebar(task.task_id);
+  };
+
+  // Checkbox ukończenia zadania
   const checkbox = document.createElement("input");
   checkbox.type = "checkbox";
   checkbox.checked = task.task_completed === 1;
@@ -79,27 +107,44 @@ function createTaskElement(task, container) {
     await updateTaskStatus(task.task_id, task_completed);
 
     if (task_completed) {
-      taskItem.classList.add("completed");
+      taskName.style.textDecoration = "line-through";
     } else {
-      taskItem.classList.remove("completed");
+      taskName.style.textDecoration = "none";
     }
   };
 
-  taskItem.appendChild(checkbox);
+  taskHeader.appendChild(taskName);
+  taskHeader.appendChild(checkbox);
+  taskItem.appendChild(taskHeader);
 
-  taskItem.onclick = (event) => {
-    if (event.target === checkbox) return;
+  // Pasek postępu (poniżej nazwy zadania)
+  const progressBarContainer = document.createElement("div");
+  progressBarContainer.classList.add("progress", "mt-2");
 
-    const isAlreadyActive = taskItem.classList.contains("active");
+  const progressBar = document.createElement("div");
+  progressBar.classList.add("progress-bar");
+  progressBar.setAttribute("role", "progressbar");
+  progressBar.style.width = "0%";
+  progressBar.style.transition = "width 0.4s ease";
 
-    document.querySelectorAll(".task-item").forEach((item) => {
-      item.classList.remove("active");
+  progressBarContainer.appendChild(progressBar);
+  taskItem.appendChild(progressBarContainer);
+
+  // Pobierz dane o postępie podzadań z serwera
+  fetch(`/tasks/${task.task_id}/progress`)
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.total > 0) {
+        const progressPercentage = (data.completed / data.total) * 100;
+        progressBar.style.width = `${progressPercentage}%`;
+        progressBar.textContent = `${data.completed}/${data.total}`;
+      } else {
+        progressBarContainer.style.display = "none"; // Ukryj pasek, jeśli brak podzadań
+      }
+    })
+    .catch((error) => {
+      console.error("Błąd pobierania postępu podzadań:", error);
     });
-
-    if (!isAlreadyActive) taskItem.classList.add("active");
-
-    showTaskDetailsAndRightSidebar(task.task_id);
-  };
 
   container.appendChild(taskItem);
 }

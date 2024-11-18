@@ -201,3 +201,26 @@ exports.getUpcomingDeadlines = (req, res) => {
     }
   });
 };
+
+//oblicza procent ukończenia podzadań dla danego zadania.
+exports.getSubtaskProgress = (req, res) => {
+  const taskId = req.params.taskId;
+
+  const query = `
+      SELECT 
+        (SELECT COUNT(*) FROM subtasks WHERE task_id = ?) AS total_subtasks,
+        (SELECT COUNT(*) FROM subtasks WHERE task_id = ? AND subtask_completed = 1) AS completed_subtasks
+    `;
+
+  db.query(query, [taskId, taskId], (err, results) => {
+    if (err) {
+      console.error("Błąd obliczania postępu podzadań:", err);
+      res.status(500).json({ error: "Błąd serwera" });
+    } else {
+      const total = results[0].total_subtasks;
+      const completed = results[0].completed_subtasks;
+      const progress = total > 0 ? (completed / total) * 100 : 0;
+      res.json({ total, completed, progress });
+    }
+  });
+};

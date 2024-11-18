@@ -31,12 +31,10 @@ exports.addSubtask = (req, res) => {
       console.error("Błąd dodawania podzadania:", err);
       res.status(500).json({ error: "Błąd serwera" });
     } else {
-      res
-        .status(201)
-        .json({
-          message: "Podzadanie dodane pomyślnie",
-          subtaskId: result.insertId,
-        });
+      res.status(201).json({
+        message: "Podzadanie dodane pomyślnie",
+        subtaskId: result.insertId,
+      });
     }
   });
 };

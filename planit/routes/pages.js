@@ -104,4 +104,11 @@ router.delete(
   subtaskController.deleteSubtask
 );
 
+//która oblicza procent ukończenia podzadań dla danego zadania. taskController
+router.get(
+  "/tasks/:taskId/progress",
+  authenticateToken,
+  taskController.getSubtaskProgress
+);
+
 module.exports = router;
