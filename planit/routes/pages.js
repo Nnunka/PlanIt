@@ -3,6 +3,7 @@ const authenticateToken = require("../middleware/auth");
 const router = express.Router();
 const authController = require("../controllers/authController");
 const taskController = require("../controllers/taskController");
+const subtaskController = require("../controllers/subtaskController");
 
 //trasa do logowania
 router.get("/", (req, res) => {
@@ -72,6 +73,35 @@ router.get(
   "/tasks/upcomingDeadlines",
   authenticateToken,
   taskController.getUpcomingDeadlines
+);
+
+///subtaski
+// Pobieranie podzadań dla konkretnego zadania
+router.get(
+  "/tasks/:taskId/subtasks",
+  authenticateToken,
+  subtaskController.getSubtasks
+);
+
+// Dodawanie nowego podzadania
+router.post(
+  "/tasks/:taskId/subtasks",
+  authenticateToken,
+  subtaskController.addSubtask
+);
+
+// Aktualizacja podzadania (np. oznaczanie jako ukończone)
+router.put(
+  "/subtasks/:subtaskId",
+  authenticateToken,
+  subtaskController.updateSubtaskStatus
+);
+
+// Usuwanie podzadania
+router.delete(
+  "/subtasks/:subtaskId",
+  authenticateToken,
+  subtaskController.deleteSubtask
 );
 
 module.exports = router;

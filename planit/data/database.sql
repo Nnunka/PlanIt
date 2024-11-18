@@ -14,7 +14,7 @@ CREATE TABLE `tasks` (
   `task_id` int NOT NULL AUTO_INCREMENT,
   `task_name` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_polish_ci NOT NULL,
   `task_user_id` int NOT NULL,
-  `task_more` varchar(1000) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  `task_more` varchar(1000) CHARACTER SET utf8mb3 COLLATE utf8mb3_polish_ci DEFAULT NULL,
   `task_group` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_polish_ci DEFAULT NULL,
   `task_end_time` time DEFAULT NULL,
   `task_end_date` date DEFAULT NULL,
@@ -23,3 +23,13 @@ CREATE TABLE `tasks` (
   KEY `fk_task_user_id` (`task_user_id`),
   CONSTRAINT `fk_task_user_id` FOREIGN KEY (`task_user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb3
+
+CREATE TABLE `subtasks` (
+  `subtask_id` int NOT NULL AUTO_INCREMENT,
+  `task_id` int NOT NULL,
+  `subtask_name` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_polish_ci NOT NULL,
+  `subtask_completed` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`subtask_id`),
+  KEY `fk_subtask_task_id` (`task_id`),
+  CONSTRAINT `fk_subtask_task_id` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`task_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3
