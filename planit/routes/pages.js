@@ -111,4 +111,10 @@ router.get(
   taskController.getSubtaskProgress
 );
 
+router.put(
+  "/tasks/:taskId/priority",
+  authenticateToken,
+  taskController.toggleTaskPriority
+);
+
 module.exports = router;

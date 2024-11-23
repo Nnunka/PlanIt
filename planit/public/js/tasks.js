@@ -58,7 +58,6 @@ async function showTodayTasks() {
   }
 }
 
-// Funkcja tworząca element zadania z interakcjami
 function createTaskElement(task, container) {
   const taskItem = document.createElement("div");
   taskItem.classList.add("task-item", "d-flex", "flex-column");
@@ -74,10 +73,15 @@ function createTaskElement(task, container) {
     "justify-content-between"
   );
 
+  // Sekcja nazwy zadania i ikony gwiazdki
+  const taskNameSection = document.createElement("div");
+  taskNameSection.classList.add("d-flex", "align-items-center");
+
   // Nazwa zadania
-  const taskName = document.createElement("div");
+  const taskName = document.createElement("span");
   taskName.innerText = task.task_name;
   taskName.style.cursor = "pointer";
+  taskName.style.marginRight = "10px"; // Odstęp między nazwą a gwiazdką
 
   if (task.task_completed) {
     taskName.style.textDecoration = "line-through";
@@ -94,6 +98,41 @@ function createTaskElement(task, container) {
 
     showTaskDetailsAndRightSidebar(task.task_id);
   };
+
+  // Ikona gwiazdki do ustawiania priorytetu
+  const starIcon = document.createElement("span");
+  starIcon.classList.add("star-icon");
+  starIcon.style.cursor = "pointer";
+  starIcon.innerHTML = task.task_priority === "high" ? "&#9733;" : "&#9734;"; // Zapełniona (★) lub pusta (☆) gwiazdka
+  starIcon.style.color = task.task_priority === "high" ? "gold" : "gray";
+  starIcon.style.fontSize = "2rem"; // Zwiększ rozmiar gwiazdki
+  starIcon.style.marginRight = "10px";
+
+  starIcon.onclick = async (event) => {
+    event.stopPropagation();
+    const newPriority = task.task_priority === "high" ? "normal" : "high";
+
+    try {
+      await fetch(`/tasks/${task.task_id}/priority`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ task_priority: newPriority }),
+      });
+
+      // Zaktualizuj ikonę gwiazdki po stronie klienta
+      starIcon.innerHTML = newPriority === "high" ? "&#9733;" : "&#9734;";
+      starIcon.style.color = newPriority === "high" ? "gold" : "gray";
+
+      // Zaktualizuj lokalną wartość priorytetu
+      task.task_priority = newPriority;
+    } catch (error) {
+      console.error("Błąd zmiany priorytetu zadania:", error);
+    }
+  };
+
+  // Dodaj gwiazdkę i nazwę zadania do sekcji
+  taskNameSection.appendChild(starIcon);
+  taskNameSection.appendChild(taskName);
 
   // Checkbox ukończenia zadania
   const checkbox = document.createElement("input");
@@ -113,7 +152,8 @@ function createTaskElement(task, container) {
     }
   };
 
-  taskHeader.appendChild(taskName);
+  // Dodaj nazwę z gwiazdką i checkbox do nagłówka
+  taskHeader.appendChild(taskNameSection);
   taskHeader.appendChild(checkbox);
   taskItem.appendChild(taskHeader);
 

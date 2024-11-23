@@ -4,7 +4,7 @@ exports.getTaskName = (req, res) => {
   const userId = req.user.user_id;
 
   const query =
-    "SELECT task_id, task_name, task_completed FROM tasks WHERE task_user_id = ?";
+    "SELECT task_id, task_name, task_completed, task_priority FROM tasks WHERE task_user_id = ?";
   db.query(query, [userId], (err, results) => {
     if (err) {
       console.error("Błąd pobierania zadań:", err);
@@ -143,7 +143,7 @@ exports.getTasksByGroup = (req, res) => {
   const group = req.params.group;
 
   const query =
-    "SELECT task_id, task_name, task_completed FROM tasks WHERE task_user_id = ? AND task_group = ?";
+    "SELECT task_id, task_name, task_completed, task_priority FROM tasks WHERE task_user_id = ? AND task_group = ?";
   db.query(query, [userId, group], (err, results) => {
     if (err) {
       console.error("Błąd pobierania zadań po grupie:", err);
@@ -159,7 +159,7 @@ exports.getTodayTasks = (req, res) => {
   const todayDate = new Date().toISOString().split("T")[0]; // Pobiera dzisiejszą datę w formacie YYYY-MM-DD
 
   const query = `
-    SELECT task_id, task_name, task_completed, task_end_date
+    SELECT task_id, task_name, task_completed, task_end_date, task_priority 
     FROM tasks
     WHERE task_user_id = ? AND task_end_date = ? AND task_completed = 0
   `;
@@ -222,5 +222,34 @@ exports.getSubtaskProgress = (req, res) => {
       const progress = total > 0 ? (completed / total) * 100 : 0;
       res.json({ total, completed, progress });
     }
+  });
+};
+
+exports.toggleTaskPriority = (req, res) => {
+  const taskId = req.params.taskId;
+
+  // Pobierz obecny priorytet zadania
+  const querySelect = "SELECT task_priority FROM tasks WHERE task_id = ?";
+  db.query(querySelect, [taskId], (err, results) => {
+    if (err || results.length === 0) {
+      console.error("Błąd podczas pobierania priorytetu zadania:", err);
+      return res.status(500).json({ error: "Błąd serwera" });
+    }
+
+    const currentPriority = results[0].task_priority;
+    const newPriority = currentPriority === "high" ? "normal" : "high";
+
+    // Aktualizacja priorytetu
+    const queryUpdate = "UPDATE tasks SET task_priority = ? WHERE task_id = ?";
+    db.query(queryUpdate, [newPriority, taskId], (updateErr) => {
+      if (updateErr) {
+        console.error("Błąd aktualizacji priorytetu zadania:", updateErr);
+        return res.status(500).json({ error: "Błąd serwera" });
+      }
+
+      res
+        .status(200)
+        .json({ message: "Priorytet zaktualizowany", newPriority });
+    });
   });
 };
