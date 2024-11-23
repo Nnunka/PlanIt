@@ -98,7 +98,3 @@ body {
 .star-icon {
   transition: color 0.3s ease;
 }
-
-.star-icon:hover {
-  color: orange; /* Podświetlenie na pomarańczowo przy najechaniu */
-}
