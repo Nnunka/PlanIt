@@ -1,5 +1,4 @@
 const db = require("../config/db");
-const bcrypt = require("bcryptjs");
 
 // Wyświetlanie panelu użytkownika
 exports.renderUserPanel = (req, res) => {

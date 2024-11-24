@@ -9,13 +9,13 @@
       href="node_modules/bootstrap/dist/css/bootstrap.min.css"
     />
   </head>
+
   <body>
     <div class="container mt-5">
       <div class="d-flex justify-content-start mb-4">
         <a href="/main" class="btn btn-secondary">Powrót do głównej</a>
       </div>
       <h2 class="text-center">Panel użytkownika</h2>
-
       <div class="card mt-4 p-4">
         <h4>Informacje o użytkowniku</h4>
         <form id="user-info-form" method="POST" action="/user/update">
@@ -72,69 +72,18 @@
       </div>
 
       <div id="notification-container" class="mt-3"></div>
-
-      <div class="card mt-4 p-4 text-center">
-        <h4>Usuń konto</h4>
-        <p>Tej operacji nie można cofnąć!</p>
-        <form id="delete-account-form" method="POST" action="/user/delete">
-          <button type="submit" class="btn btn-danger">Usuń konto</button>
-        </form>
-      </div>
+    <div class="card mt-4 p-4 text-center">
+      <h4>Usuń konto</h4>
+      <p>Tej operacji nie można cofnąć!</p>
+      <button class="btn btn-danger" onclick="deleteUser()">Usuń konto</button>
     </div>
+
+    <!-- Modal Potwierdzenia Usunięcia Użytkownika -->
+    <%-include('modals/deleteUserModal.ejs')%>
+
+    <script src="/js/user.js"></script>
+    <script src="/js/logout.js"></script>
+
+    <script src="node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   </body>
-
-  <script>
-    // Obsługa formularza aktualizacji danych użytkownika
-    const userInfoForm = document.getElementById("user-info-form");
-    userInfoForm.addEventListener("submit", async (event) => {
-      event.preventDefault();
-
-      const formData = new FormData(userInfoForm);
-
-      try {
-        const response = await fetch("/user/update", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            user_name: formData.get("user_name"),
-            user_surname: formData.get("user_surname"),
-            user_login: formData.get("user_login"),
-            user_email: formData.get("user_email"),
-          }),
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-          showNotification("success", data.message);
-        } else {
-          showNotification("error", data.message);
-        }
-      } catch (error) {
-        console.error("Błąd aktualizacji danych użytkownika:", error);
-        showNotification("error", "Wystąpił błąd. Spróbuj ponownie.");
-      }
-    });
-
-    // Funkcja do wyświetlania powiadomień
-    function showNotification(type, message) {
-      const notification = document.createElement("div");
-      notification.className = `alert alert-${
-        type === "success" ? "success" : "danger"
-      }`;
-      notification.textContent = message;
-
-      const container = document.getElementById("notification-container");
-      container.innerHTML = ""; // Wyczyszczenie poprzednich powiadomień
-      container.appendChild(notification);
-
-      // Usunięcie powiadomienia po 3 sekundach
-      setTimeout(() => {
-        notification.remove();
-      }, 3000);
-    }
-  </script>
-  <script src="/js/logout.js"></script>
 </html>
