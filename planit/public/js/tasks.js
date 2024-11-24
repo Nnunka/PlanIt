@@ -110,23 +110,34 @@ function createTaskElement(task, container) {
 
   starIcon.onclick = async (event) => {
     event.stopPropagation();
-    const newPriority = task.task_priority === "high" ? "normal" : "high";
 
     try {
-      await fetch(`/tasks/${task.task_id}/priority`, {
+      const response = await fetch(`/tasks/${task.task_id}/priority`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ task_priority: newPriority }),
       });
 
-      // Zaktualizuj ikonę gwiazdki po stronie klienta
-      starIcon.innerHTML = newPriority === "high" ? "&#9733;" : "&#9734;";
-      starIcon.style.color = newPriority === "high" ? "gold" : "gray";
+      if (response.ok) {
+        const result = await response.json();
+        const newPriority = result.newPriority;
 
-      // Zaktualizuj lokalną wartość priorytetu
-      task.task_priority = newPriority;
+        // Zaktualizuj ikonę gwiazdki po stronie klienta
+        starIcon.innerHTML = newPriority === "high" ? "&#9733;" : "&#9734;";
+        starIcon.style.color = newPriority === "high" ? "gold" : "gray";
+
+        // Odśwież listę zadań w zależności od bieżącego kontekstu
+        if (!currentGroup) {
+          await showTasks(); // Wszystkie zadania
+        } else if (currentGroup === "today") {
+          await showTodayTasks(); // Zadania na dziś
+        } else {
+          await filterTasksByGroup(currentGroup); // Zadania w grupie
+        }
+      } else {
+        console.error("Błąd zmiany priorytetu zadania.");
+      }
     } catch (error) {
-      console.error("Błąd zmiany priorytetu zadania:", error);
+      console.error("Błąd podczas zmiany priorytetu zadania:", error);
     }
   };
 

@@ -2,10 +2,20 @@ const db = require("../config/db");
 
 exports.getTaskName = (req, res) => {
   const userId = req.user.user_id;
+  const todayDate = new Date().toISOString().split("T")[0]; // Dzisiejsza data w formacie YYYY-MM-DD
 
-  const query =
-    "SELECT task_id, task_name, task_completed, task_priority FROM tasks WHERE task_user_id = ?";
-  db.query(query, [userId], (err, results) => {
+  const query = `
+    SELECT task_id, task_name, task_completed, task_priority
+    FROM tasks
+    WHERE task_user_id = ? AND (task_end_date IS NULL OR task_end_date != ?) ORDER BY 
+      CASE task_priority 
+        WHEN 'high' THEN 1 
+        ELSE 2 
+      END, 
+      task_end_date ASC
+  `;
+
+  db.query(query, [userId, todayDate], (err, results) => {
     if (err) {
       console.error("Błąd pobierania zadań:", err);
       res.status(500).json({ error: "Błąd serwera" });
@@ -142,8 +152,17 @@ exports.getTasksByGroup = (req, res) => {
   const userId = req.user.user_id;
   const group = req.params.group;
 
-  const query =
-    "SELECT task_id, task_name, task_completed, task_priority FROM tasks WHERE task_user_id = ? AND task_group = ?";
+  const query = `
+    SELECT task_id, task_name, task_completed, task_priority
+    FROM tasks
+    WHERE task_user_id = ? AND task_group = ?
+    ORDER BY 
+      CASE task_priority 
+        WHEN 'high' THEN 1 
+        ELSE 2 
+      END, 
+      task_end_date ASC
+  `;
   db.query(query, [userId, group], (err, results) => {
     if (err) {
       console.error("Błąd pobierania zadań po grupie:", err);
