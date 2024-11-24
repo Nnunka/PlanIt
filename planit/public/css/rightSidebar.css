@@ -42,12 +42,12 @@
 }
 
 .sidebar-right::-webkit-scrollbar-thumb {
-  background-color: #6ea8fe; /* Kolor paska */
+  background-color: #a0a0a0; /* Kolor paska */
   border-radius: 4px;
 }
 
 .sidebar-right::-webkit-scrollbar-thumb:hover {
-  background-color: #0056b3; /* Kolor paska po najechaniu */
+  background-color: #808080; /* Kolor paska po najechaniu */
 }
 
 .sidebar-right::-webkit-scrollbar-track {
