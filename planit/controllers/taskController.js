@@ -43,9 +43,15 @@ exports.getTaskDetails = (req, res) => {
 };
 
 exports.getTaskGroups = (req, res) => {
-  const query =
-    "SELECT DISTINCT task_group FROM tasks WHERE task_group IS NOT NULL";
-  db.query(query, (err, results) => {
+  const userId = req.user.user_id; // Pobieranie ID obecnie zalogowanego użytkownika
+
+  const query = `
+    SELECT DISTINCT task_group 
+    FROM tasks 
+    WHERE task_user_id = ? AND task_group IS NOT NULL
+  `;
+
+  db.query(query, [userId], (err, results) => {
     if (err) {
       console.error("Błąd pobierania grup zadań:", err);
       res.status(500).json({ error: "Błąd serwera" });
