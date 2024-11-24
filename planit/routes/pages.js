@@ -4,6 +4,7 @@ const router = express.Router();
 const authController = require("../controllers/authController");
 const taskController = require("../controllers/taskController");
 const subtaskController = require("../controllers/subtaskController");
+const userController = require("../controllers/userController");
 
 //trasa do logowania
 router.get("/", (req, res) => {
@@ -116,5 +117,14 @@ router.put(
   authenticateToken,
   taskController.toggleTaskPriority
 );
+
+// Wyświetlanie panelu użytkownika
+router.get("/user", authenticateToken, userController.renderUserPanel);
+
+// Aktualizacja danych użytkownika
+router.post("/user/update", authenticateToken, userController.updateUser);
+
+// Usuwanie konta użytkownika
+router.post("/user/delete", authenticateToken, userController.deleteUser);
 
 module.exports = router;
