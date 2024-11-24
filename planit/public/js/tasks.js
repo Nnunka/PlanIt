@@ -44,7 +44,7 @@ async function showTodayTasks() {
 
     if (tasks.length > 0) {
       const header = document.createElement("h3");
-      header.textContent = "Zadania na dziś:";
+      header.textContent = "Zadania na dziś";
       todayTasksContainer.appendChild(header);
 
       tasks.forEach((task) => createTaskElement(task, todayTasksContainer));
