@@ -6,68 +6,82 @@ const taskController = require("../controllers/taskController");
 const subtaskController = require("../controllers/subtaskController");
 const userController = require("../controllers/userController");
 
-//trasa do logowania
+///// AUTHENTICATION ROUTES /////
+
+// Trasa do logowania (renderowanie strony logowania)
 router.get("/", (req, res) => {
   res.render("login");
 });
 
-//obsługa formularza logowania
+// Obsługa formularza logowania
 router.post("/login", authController.login);
 
-// trasa do rejestracji
+// Trasa do rejestracji (renderowanie strony rejestracji)
 router.get("/register", (req, res) => {
   res.render("register");
 });
 
-//obsługa formularza rejestracji
+// Obsługa formularza rejestracji
 router.post("/register", authController.register);
 
-//trasa do wylogowania
+// Trasa do wylogowania użytkownika
 router.get("/logout", authController.logout);
 
-//trasa na stronę główna
+// Trasa na stronę główną aplikacji
 router.get("/main", authenticateToken, (req, res) => {
   res.render("main", { user: req.user });
 });
 
-/////
+///// USER MANAGEMENT ROUTES /////
 
-//trasa do pobierania listy zadań z bazy
+// Wyświetlanie panelu użytkownika
+router.get("/user", authenticateToken, userController.renderUserPanel);
+
+// Aktualizacja danych użytkownika
+router.post("/user/update", authenticateToken, userController.updateUser);
+
+// Usuwanie konta użytkownika
+router.post("/user/delete", authenticateToken, userController.deleteUser);
+
+////// TASK ROUTES /////
+
+// Pobieranie listy wszystkich zadań użytkownika
 router.get("/tasks", authenticateToken, taskController.getTaskName);
 
+// Pobieranie szczegółów zadania (GET) oraz edycja zadania (PUT)
 router.get(
   "/task/:taskId",
-  taskController.getTaskDetails, //trasa do pobierania szczegółów zadań
-  taskController.updateTask //trasa do edycji zadań
+  taskController.getTaskDetails,
+  taskController.updateTask // Pobiera szczegóły konkretnego zadania
 );
 
-//edycja zadań
+// Aktualizuje zadanie
 router.put("/task/:taskId", taskController.updateTask);
 
-//dodawanie zadań
+// Dodawanie nowego zadania
 router.post("/task", authenticateToken, taskController.addTask);
 
-//usuwanie zadań
+// Usuwanie istniejącego zadania
 router.delete("/task/:taskId", authenticateToken, taskController.deleteTask);
 
-//scieżka do grupy zadania
+// Pobieranie grup zadań przypisanych do użytkownika
 router.get("/tasks/groups", authenticateToken, taskController.getTaskGroups);
 
-//dodanie zadania jako zakończone
+// Aktualizacja statusu zadania (oznaczenie jako zakończone/niezakończone)
 router.put(
   "/task/:taskId/status",
   authenticateToken,
   taskController.updateTaskStatus
 );
 
-//trasa do pobierania zadań na podstawie grupy
+// Pobieranie zadań na podstawie grupy
 router.get(
   "/tasks/group/:group",
   authenticateToken,
   taskController.getTasksByGroup
 );
 
-//trasa do pobierania tasków 'na dziś'
+// Pobieranie zadań przypadających na dzisiejszy dzień
 router.get("/tasks/today", authenticateToken, taskController.getTodayTasks);
 
 router.get(
@@ -76,7 +90,8 @@ router.get(
   taskController.getUpcomingDeadlines
 );
 
-///subtaski
+// SUBTASK ROUTES
+
 // Pobieranie podzadań dla konkretnego zadania
 router.get(
   "/tasks/:taskId/subtasks",
@@ -84,14 +99,14 @@ router.get(
   subtaskController.getSubtasks
 );
 
-// Dodawanie nowego podzadania
+// Dodawanie nowego podzadania do zadania
 router.post(
   "/tasks/:taskId/subtasks",
   authenticateToken,
   subtaskController.addSubtask
 );
 
-// Aktualizacja podzadania (np. oznaczanie jako ukończone)
+// Aktualizacja statusu podzadania (oznaczenie jako ukończone)
 router.put(
   "/subtasks/:subtaskId",
   authenticateToken,
@@ -105,26 +120,18 @@ router.delete(
   subtaskController.deleteSubtask
 );
 
-//która oblicza procent ukończenia podzadań dla danego zadania. taskController
+// Pobieranie procentowego postępu realizacji podzadań dla zadania
 router.get(
   "/tasks/:taskId/progress",
   authenticateToken,
   taskController.getSubtaskProgress
 );
 
+// Zmiana priorytetu zadania (wysoki/normalny)
 router.put(
   "/tasks/:taskId/priority",
   authenticateToken,
   taskController.toggleTaskPriority
 );
-
-// Wyświetlanie panelu użytkownika
-router.get("/user", authenticateToken, userController.renderUserPanel);
-
-// Aktualizacja danych użytkownika
-router.post("/user/update", authenticateToken, userController.updateUser);
-
-// Usuwanie konta użytkownika
-router.post("/user/delete", authenticateToken, userController.deleteUser);
 
 module.exports = router;
