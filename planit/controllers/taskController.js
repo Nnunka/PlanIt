@@ -15,11 +15,15 @@ exports.getTaskName = (req, res) => {
       (SELECT COUNT(*) FROM files f WHERE f.file_task_id = t.task_id) > 0 AS has_files
     FROM tasks t
     WHERE t.task_user_id = ?
+      AND (t.task_end_date IS NULL OR t.task_end_date != ?) -- Wyklucz zadania z dzisiejszą datą
     ORDER BY 
+      t.task_completed ASC, -- Niewykonane zadania (0) pojawią się przed wykonanymi (1)
       CASE t.task_priority 
         WHEN 'high' THEN 1 
         ELSE 2 
-      END
+      END,
+      t.task_end_date ASC, -- Zadania z wcześniejszymi datami wyżej
+      t.task_name ASC -- Sortowanie alfabetyczne w przypadku braku daty i priorytetu
   `;
 
   db.query(query, [userId, todayDate], (err, results) => {
@@ -192,18 +196,24 @@ exports.getTodayTasks = (req, res) => {
 
   const query = `
     SELECT 
-      t.task_id, 
-      t.task_name, 
-      t.task_completed, 
-      t.task_end_date, 
+      t.task_id,
+      t.task_name,
+      t.task_completed,
       t.task_priority,
-      t.task_end_date IS NOT NULL AS has_date, -- Informacja, czy zadanie ma datę
-      t.task_end_time IS NOT NULL AS has_time, -- Informacja, czy zadanie ma godzinę
-      EXISTS (SELECT 1 FROM files f WHERE f.file_task_id = t.task_id) AS has_files -- Czy zadanie ma załączniki
+      t.task_end_date IS NOT NULL AS has_date,
+      t.task_end_time IS NOT NULL AS has_time,
+      EXISTS (SELECT 1 FROM files f WHERE f.file_task_id = t.task_id) AS has_files
     FROM tasks t
     WHERE t.task_user_id = ? 
-      AND DATE(t.task_end_date) = ? 
-      AND t.task_completed = 0
+      AND DATE(t.task_end_date) = CURDATE()
+    ORDER BY 
+      t.task_completed ASC, -- Niewykonane zadania wyżej
+      CASE t.task_priority
+        WHEN 'high' THEN 1 
+        ELSE 2 
+      END,
+      t.task_end_date ASC, -- Zadania z wcześniejszymi datami wyżej
+      t.task_name ASC -- Sortowanie alfabetyczne w przypadku braku daty i priorytetu
   `;
 
   db.query(query, [userId, todayDate], (err, results) => {
