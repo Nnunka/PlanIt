@@ -10,6 +10,7 @@ exports.getTaskName = (req, res) => {
       t.task_name, 
       t.task_completed, 
       t.task_priority, 
+      t.task_group,
       t.task_end_date IS NOT NULL AS has_date, 
       t.task_end_time IS NOT NULL AS has_time,
       (SELECT COUNT(*) FROM files f WHERE f.file_task_id = t.task_id) > 0 AS has_files
@@ -200,6 +201,7 @@ exports.getTodayTasks = (req, res) => {
       t.task_name,
       t.task_completed,
       t.task_priority,
+      t.task_group,
       t.task_end_date IS NOT NULL AS has_date,
       t.task_end_time IS NOT NULL AS has_time,
       EXISTS (SELECT 1 FROM files f WHERE f.file_task_id = t.task_id) AS has_files

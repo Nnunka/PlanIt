@@ -179,6 +179,15 @@ function createTaskElement(task, container) {
     iconContainer.appendChild(timeIcon);
   }
 
+  // Ikona grupy
+  if (task.task_group) {
+    const groupIcon = document.createElement("i");
+    groupIcon.classList.add("bi", "bi-folder"); // Użycie ikony folderu z Bootstrap Icons
+    groupIcon.title = `Grupa: ${task.task_group}`;
+    groupIcon.style.marginLeft = "5px";
+    iconContainer.appendChild(groupIcon);
+  }
+
   // Ikona plików
   if (task.has_files) {
     const fileIcon = document.createElement("i");
