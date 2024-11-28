@@ -8,21 +8,6 @@ const userController = require("../controllers/userController");
 const fileController = require("../controllers/fileController");
 const upload = require("../middleware/multer");
 
-// Fetch files for a task
-router.get("/tasks/:taskId/files", fileController.getFilesForTask);
-
-// Upload a file
-router.post(
-  "/tasks/:taskId/files",
-  upload.single("file"),
-  fileController.uploadFile
-);
-
-// Delete a file
-router.delete("/files/:fileId", fileController.deleteFile);
-
-router.get("/files/:fileId/download", fileController.downloadFile);
-
 ///// AUTHENTICATION ROUTES /////
 
 // Trasa do logowania (renderowanie strony logowania)
@@ -107,7 +92,25 @@ router.get(
   taskController.getUpcomingDeadlines
 );
 
-// SUBTASK ROUTES
+////// FILE ROUTES //////
+
+// Pobieranie listy plików dla konkretnego zadania
+router.get("/tasks/:taskId/files", fileController.getFilesForTask);
+
+// Przesyłanie pliku dla konkretnego zadania
+router.post(
+  "/tasks/:taskId/files",
+  upload.single("file"),
+  fileController.uploadFile
+);
+
+// Usuwanie pliku
+router.delete("/files/:fileId", fileController.deleteFile);
+
+// Pobieranie pliku
+router.get("/files/:fileId/download", fileController.downloadFile);
+
+////// SUBTASK ROUTES //////
 
 // Pobieranie podzadań dla konkretnego zadania
 router.get(

@@ -204,11 +204,8 @@ document.getElementById("file-upload-form").onsubmit = async (event) => {
     });
 
     if (response.ok) {
-      alert("Plik został przesłany.");
       loadFilesForTask(currentTaskId); // Refresh the file list
       fileInput.value = ""; // Clear file input
-    } else {
-      alert("Błąd podczas przesyłania pliku.");
     }
   } catch (error) {
     console.error("Error uploading file:", error);
@@ -223,10 +220,7 @@ async function deleteFile(fileId) {
     });
 
     if (response.ok) {
-      alert("Plik został usunięty.");
       loadFilesForTask(currentTaskId); // Refresh the file list
-    } else {
-      alert("Błąd podczas usuwania pliku.");
     }
   } catch (error) {
     console.error("Error deleting file:", error);
