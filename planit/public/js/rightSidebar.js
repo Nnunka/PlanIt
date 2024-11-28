@@ -156,3 +156,108 @@ async function deleteSubtask(subtaskId) {
     console.error("Błąd usuwania podzadania:", error);
   }
 }
+
+// Load files for the selected task
+// Load files for the selected task
+async function loadFilesForTask(taskId) {
+  try {
+    const response = await fetch(`/tasks/${taskId}/files`);
+    const data = await response.json();
+
+    const fileList = document.getElementById("file-list");
+    fileList.innerHTML = ""; // Clear existing files
+
+    data.files.forEach((file) => {
+      const listItem = document.createElement("li");
+      listItem.className =
+        "list-group-item d-flex justify-content-between align-items-center";
+
+      // Use the download route with the original file name
+      listItem.innerHTML = `
+        <a href="/files/${file.file_id}/download">${file.file_name}</a>
+        <button class="btn btn-danger btn-sm" onclick="deleteFile(${file.file_id})">Usuń</button>
+      `;
+      fileList.appendChild(listItem);
+    });
+  } catch (error) {
+    console.error("Error loading files:", error);
+  }
+}
+
+// Upload a file for the selected task
+document.getElementById("file-upload-form").onsubmit = async (event) => {
+  event.preventDefault();
+
+  const fileInput = document.getElementById("file-input");
+  if (!fileInput.files.length || !currentTaskId) {
+    alert("Wybierz plik i upewnij się, że wybrano zadanie.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("file", fileInput.files[0]);
+
+  try {
+    const response = await fetch(`/tasks/${currentTaskId}/files`, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (response.ok) {
+      alert("Plik został przesłany.");
+      loadFilesForTask(currentTaskId); // Refresh the file list
+      fileInput.value = ""; // Clear file input
+    } else {
+      alert("Błąd podczas przesyłania pliku.");
+    }
+  } catch (error) {
+    console.error("Error uploading file:", error);
+  }
+};
+
+// Delete a file
+async function deleteFile(fileId) {
+  try {
+    const response = await fetch(`/files/${fileId}`, {
+      method: "DELETE",
+    });
+
+    if (response.ok) {
+      alert("Plik został usunięty.");
+      loadFilesForTask(currentTaskId); // Refresh the file list
+    } else {
+      alert("Błąd podczas usuwania pliku.");
+    }
+  } catch (error) {
+    console.error("Error deleting file:", error);
+  }
+}
+
+// Ensure files are loaded when right sidebar is opened
+async function showTaskDetailsAndRightSidebar(taskId) {
+  currentTaskId = taskId;
+
+  try {
+    const response = await fetch(`/task/${taskId}`);
+    const data = await response.json();
+
+    document.getElementById("task-name").value = data.task_name || "";
+    document.getElementById("task-more").value = data.task_more || "";
+    await taskGroupOptions(data.task_group || null);
+
+    document.getElementById("task-end-date").value = formatDate(
+      data.task_end_date
+    );
+    document.getElementById("task-end-time").value = data.task_end_time || "";
+
+    toggleRightSidebar(true);
+
+    // Load subtasks
+    await loadSubtasks(taskId);
+
+    // Load files for this task
+    await loadFilesForTask(taskId);
+  } catch (error) {
+    console.error("Błąd pobierania szczegółów zadania:", error);
+  }
+}

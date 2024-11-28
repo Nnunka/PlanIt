@@ -5,6 +5,23 @@ const authController = require("../controllers/authController");
 const taskController = require("../controllers/taskController");
 const subtaskController = require("../controllers/subtaskController");
 const userController = require("../controllers/userController");
+const fileController = require("../controllers/fileController");
+const upload = require("../middleware/multer");
+
+// Fetch files for a task
+router.get("/tasks/:taskId/files", fileController.getFilesForTask);
+
+// Upload a file
+router.post(
+  "/tasks/:taskId/files",
+  upload.single("file"),
+  fileController.uploadFile
+);
+
+// Delete a file
+router.delete("/files/:fileId", fileController.deleteFile);
+
+router.get("/files/:fileId/download", fileController.downloadFile);
 
 ///// AUTHENTICATION ROUTES /////
 
