@@ -46,6 +46,7 @@ async function showTaskDetailsAndRightSidebar(taskId) {
 
     // Załaduj podzadania dla bieżącego zadania
     await loadSubtasks(taskId);
+    await loadFilesForTask(taskId);
   } catch (error) {
     console.error("Błąd pobierania szczegółów zadania:", error);
   }
@@ -224,34 +225,5 @@ async function deleteFile(fileId) {
     }
   } catch (error) {
     console.error("Error deleting file:", error);
-  }
-}
-
-// Ensure files are loaded when right sidebar is opened
-async function showTaskDetailsAndRightSidebar(taskId) {
-  currentTaskId = taskId;
-
-  try {
-    const response = await fetch(`/task/${taskId}`);
-    const data = await response.json();
-
-    document.getElementById("task-name").value = data.task_name || "";
-    document.getElementById("task-more").value = data.task_more || "";
-    await taskGroupOptions(data.task_group || null);
-
-    document.getElementById("task-end-date").value = formatDate(
-      data.task_end_date
-    );
-    document.getElementById("task-end-time").value = data.task_end_time || "";
-
-    toggleRightSidebar(true);
-
-    // Load subtasks
-    await loadSubtasks(taskId);
-
-    // Load files for this task
-    await loadFilesForTask(taskId);
-  } catch (error) {
-    console.error("Błąd pobierania szczegółów zadania:", error);
   }
 }
