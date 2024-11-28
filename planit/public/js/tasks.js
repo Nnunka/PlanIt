@@ -59,6 +59,7 @@ async function showTodayTasks() {
 }
 
 function createTaskElement(task, container) {
+  // Główny element zadania
   const taskItem = document.createElement("div");
   taskItem.classList.add("task-item", "d-flex", "flex-column");
   taskItem.style.borderBottom = "1px solid #ddd";
@@ -73,41 +74,20 @@ function createTaskElement(task, container) {
     "justify-content-between"
   );
 
-  // Sekcja nazwy zadania i ikony gwiazdki
+  // Sekcja nazwy zadania, ikon i gwiazdki
   const taskNameSection = document.createElement("div");
   taskNameSection.classList.add("d-flex", "align-items-center");
 
-  // Nazwa zadania
-  const taskName = document.createElement("span");
-  taskName.innerText = task.task_name;
-  taskName.style.cursor = "pointer";
-  taskName.style.marginRight = "10px"; // Odstęp między nazwą a gwiazdką
-
-  if (task.task_completed) {
-    taskName.style.textDecoration = "line-through";
-  }
-
-  taskName.onclick = () => {
-    const isAlreadyActive = taskItem.classList.contains("active");
-
-    document.querySelectorAll(".task-item").forEach((item) => {
-      item.classList.remove("active");
-    });
-
-    if (!isAlreadyActive) taskItem.classList.add("active");
-
-    showTaskDetailsAndRightSidebar(task.task_id);
-  };
-
-  // Ikona gwiazdki do ustawiania priorytetu
+  // Gwiazdka (priorytet)
   const starIcon = document.createElement("span");
   starIcon.classList.add("star-icon");
   starIcon.style.cursor = "pointer";
   starIcon.innerHTML = task.task_priority === "high" ? "&#9733;" : "&#9734;"; // Zapełniona (★) lub pusta (☆) gwiazdka
   starIcon.style.color = task.task_priority === "high" ? "gold" : "gray";
-  starIcon.style.fontSize = "2rem"; // Zwiększ rozmiar gwiazdki
-  starIcon.style.marginRight = "10px";
+  starIcon.style.fontSize = "2rem"; // Większy rozmiar gwiazdki
+  starIcon.style.marginRight = "15px";
 
+  // Obsługa kliknięcia na gwiazdkę
   starIcon.onclick = async (event) => {
     event.stopPropagation();
 
@@ -121,17 +101,17 @@ function createTaskElement(task, container) {
         const result = await response.json();
         const newPriority = result.newPriority;
 
-        // Zaktualizuj ikonę gwiazdki po stronie klienta
+        // Aktualizacja wyglądu gwiazdki
         starIcon.innerHTML = newPriority === "high" ? "&#9733;" : "&#9734;";
         starIcon.style.color = newPriority === "high" ? "gold" : "gray";
 
-        // Odśwież listę zadań w zależności od bieżącego kontekstu
+        // Odśwież listę zadań w zależności od kontekstu
         if (!currentGroup) {
-          await showTasks(); // Wszystkie zadania
+          await showTasks();
         } else if (currentGroup === "today") {
-          await showTodayTasks(); // Zadania na dziś
+          await showTodayTasks();
         } else {
-          await filterTasksByGroup(currentGroup); // Zadania w grupie
+          await filterTasksByGroup(currentGroup);
         }
       } else {
         console.error("Błąd zmiany priorytetu zadania.");
@@ -141,9 +121,78 @@ function createTaskElement(task, container) {
     }
   };
 
-  // Dodaj gwiazdkę i nazwę zadania do sekcji
-  taskNameSection.appendChild(starIcon);
-  taskNameSection.appendChild(taskName);
+  // Nazwa zadania
+  const taskNameContainer = document.createElement("div");
+  taskNameContainer.classList.add(
+    "d-flex",
+    "align-items-center",
+    "flex-grow-1"
+  );
+
+  const taskName = document.createElement("span");
+  taskName.innerText = task.task_name; // Ustawienie tekstu nazwy zadania
+  taskName.style.cursor = "pointer"; // Dodanie wskaźnika kursora
+  taskName.style.marginRight = "10px"; // Odstęp między nazwą a ikonami
+
+  // Przekreślenie nazwy, jeśli zadanie jest ukończone
+  if (task.task_completed) {
+    taskName.style.textDecoration = "line-through";
+  }
+
+  // Obsługa kliknięcia w nazwę zadania
+  taskName.onclick = () => {
+    const isAlreadyActive = taskItem.classList.contains("active");
+
+    // Usunięcie klasy "active" ze wszystkich zadań
+    document.querySelectorAll(".task-item").forEach((item) => {
+      item.classList.remove("active");
+    });
+
+    // Dodanie klasy "active" tylko do klikniętego zadania
+    if (!isAlreadyActive) taskItem.classList.add("active");
+
+    // Wyświetlenie szczegółów zadania w prawym sidebarze
+    showTaskDetailsAndRightSidebar(task.task_id);
+  };
+
+  taskNameContainer.appendChild(taskName);
+
+  // Kontener na ikonki (zaraz obok nazwy zadania po prawej stronie)
+  const iconContainer = document.createElement("div");
+  iconContainer.classList.add("d-flex", "align-items-center");
+
+  // Ikona daty
+  if (task.has_date) {
+    const dateIcon = document.createElement("i");
+    dateIcon.classList.add("bi", "bi-calendar-event"); // Ikona Bootstrap
+    dateIcon.title = "Zadanie ma przypisaną datę";
+    dateIcon.style.marginLeft = "5px"; // Odstęp między ikonami
+    iconContainer.appendChild(dateIcon);
+  }
+
+  // Ikona godziny
+  if (task.has_time) {
+    const timeIcon = document.createElement("i");
+    timeIcon.classList.add("bi", "bi-clock"); // Ikona Bootstrap
+    timeIcon.title = "Zadanie ma przypisaną godzinę";
+    timeIcon.style.marginLeft = "5px";
+    iconContainer.appendChild(timeIcon);
+  }
+
+  // Ikona plików
+  if (task.has_files) {
+    const fileIcon = document.createElement("i");
+    fileIcon.classList.add("bi", "bi-paperclip"); // Ikona Bootstrap
+    fileIcon.title = "Zadanie ma załączniki";
+    iconContainer.appendChild(fileIcon);
+  }
+
+  // Dodanie elementów do sekcji
+  taskNameContainer.appendChild(iconContainer); // Ikonki tuż obok nazwy zadania
+
+  // Dodanie gwiazdki, nazwy zadania i ikon do sekcji
+  taskNameSection.appendChild(starIcon); // Gwiazdka po lewej stronie
+  taskNameSection.appendChild(taskNameContainer); // Nazwa zadania i ikonki
 
   // Checkbox ukończenia zadania
   const checkbox = document.createElement("input");
@@ -151,6 +200,7 @@ function createTaskElement(task, container) {
   checkbox.checked = task.task_completed === 1;
   checkbox.classList.add("task-checkbox");
 
+  // Obsługa kliknięcia w checkbox
   checkbox.onclick = async (event) => {
     event.stopPropagation();
     const task_completed = checkbox.checked ? 1 : 0;
@@ -163,40 +213,43 @@ function createTaskElement(task, container) {
     }
   };
 
-  // Dodaj nazwę z gwiazdką i checkbox do nagłówka
+  // Dodanie sekcji nazwy i checkboxa do nagłówka
   taskHeader.appendChild(taskNameSection);
   taskHeader.appendChild(checkbox);
+
+  // Dodanie nagłówka do głównego elementu zadania
   taskItem.appendChild(taskHeader);
 
-  // Pasek postępu (poniżej nazwy zadania)
+  // Pasek postępu dla podzadań
   const progressBarContainer = document.createElement("div");
   progressBarContainer.classList.add("progress", "mt-2");
 
   const progressBar = document.createElement("div");
   progressBar.classList.add("progress-bar");
   progressBar.setAttribute("role", "progressbar");
-  progressBar.style.width = "0%";
-  progressBar.style.transition = "width 0.4s ease";
+  progressBar.style.width = "0%"; // Inicjalna szerokość
+  progressBar.style.transition = "width 0.4s ease"; // Animacja zmiany szerokości
 
   progressBarContainer.appendChild(progressBar);
   taskItem.appendChild(progressBarContainer);
 
-  // Pobierz dane o postępie podzadań z serwera
+  // Pobranie danych o postępie podzadań z serwera
   fetch(`/tasks/${task.task_id}/progress`)
     .then((response) => response.json())
     .then((data) => {
       if (data.total > 0) {
         const progressPercentage = (data.completed / data.total) * 100;
-        progressBar.style.width = `${progressPercentage}%`;
-        progressBar.textContent = `${data.completed}/${data.total}`;
+        progressBar.style.width = `${progressPercentage}%`; // Ustawienie szerokości paska
+        progressBar.textContent = `${data.completed}/${data.total}`; // Wyświetlenie ilości ukończonych podzadań
       } else {
-        progressBarContainer.style.display = "none"; // Ukryj pasek, jeśli brak podzadań
+        progressBarContainer.style.display = "none"; // Ukrycie paska, jeśli brak podzadań
       }
     })
     .catch((error) => {
       console.error("Błąd pobierania postępu podzadań:", error);
     });
 
+  // Dodanie całego elementu zadania do kontenera
   container.appendChild(taskItem);
 }
 

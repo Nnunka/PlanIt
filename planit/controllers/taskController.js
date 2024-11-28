@@ -5,14 +5,21 @@ exports.getTaskName = (req, res) => {
   const todayDate = new Date().toISOString().split("T")[0]; // Dzisiejsza data w formacie YYYY-MM-DD
 
   const query = `
-    SELECT task_id, task_name, task_completed, task_priority
-    FROM tasks
-    WHERE task_user_id = ? AND (task_end_date IS NULL OR task_end_date != ?) ORDER BY 
-      CASE task_priority 
+    SELECT 
+      t.task_id, 
+      t.task_name, 
+      t.task_completed, 
+      t.task_priority, 
+      t.task_end_date IS NOT NULL AS has_date, 
+      t.task_end_time IS NOT NULL AS has_time,
+      (SELECT COUNT(*) FROM files f WHERE f.file_task_id = t.task_id) > 0 AS has_files
+    FROM tasks t
+    WHERE t.task_user_id = ?
+    ORDER BY 
+      CASE t.task_priority 
         WHEN 'high' THEN 1 
         ELSE 2 
-      END, 
-      task_end_date ASC
+      END
   `;
 
   db.query(query, [userId, todayDate], (err, results) => {
@@ -184,10 +191,21 @@ exports.getTodayTasks = (req, res) => {
   const todayDate = new Date().toISOString().split("T")[0]; // Pobiera dzisiejszą datę w formacie YYYY-MM-DD
 
   const query = `
-    SELECT task_id, task_name, task_completed, task_end_date, task_priority 
-    FROM tasks
-    WHERE task_user_id = ? AND task_end_date = ? AND task_completed = 0
+    SELECT 
+      t.task_id, 
+      t.task_name, 
+      t.task_completed, 
+      t.task_end_date, 
+      t.task_priority,
+      t.task_end_date IS NOT NULL AS has_date, -- Informacja, czy zadanie ma datę
+      t.task_end_time IS NOT NULL AS has_time, -- Informacja, czy zadanie ma godzinę
+      EXISTS (SELECT 1 FROM files f WHERE f.file_task_id = t.task_id) AS has_files -- Czy zadanie ma załączniki
+    FROM tasks t
+    WHERE t.task_user_id = ? 
+      AND DATE(t.task_end_date) = ? 
+      AND t.task_completed = 0
   `;
+
   db.query(query, [userId, todayDate], (err, results) => {
     if (err) {
       console.error("Błąd pobierania zadań na dziś:", err);

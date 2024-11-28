@@ -159,7 +159,6 @@ async function deleteSubtask(subtaskId) {
 }
 
 // Load files for the selected task
-// Load files for the selected task
 async function loadFilesForTask(taskId) {
   try {
     const response = await fetch(`/tasks/${taskId}/files`);
@@ -206,6 +205,7 @@ document.getElementById("file-upload-form").onsubmit = async (event) => {
 
     if (response.ok) {
       loadFilesForTask(currentTaskId); // Refresh the file list
+      showTasks(currentGroup);
       fileInput.value = ""; // Clear file input
     }
   } catch (error) {
@@ -222,6 +222,7 @@ async function deleteFile(fileId) {
 
     if (response.ok) {
       loadFilesForTask(currentTaskId); // Refresh the file list
+      showTasks(currentGroup);
     }
   } catch (error) {
     console.error("Error deleting file:", error);
