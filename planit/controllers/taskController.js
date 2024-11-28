@@ -171,15 +171,25 @@ exports.getTasksByGroup = (req, res) => {
   const group = req.params.group;
 
   const query = `
-    SELECT task_id, task_name, task_completed, task_priority
-    FROM tasks
-    WHERE task_user_id = ? AND task_group = ?
+    SELECT 
+      t.task_id, 
+      t.task_name, 
+      t.task_completed, 
+      t.task_priority, 
+      t.task_end_date IS NOT NULL AS has_date, -- Czy zadanie ma datę
+      t.task_end_time IS NOT NULL AS has_time, -- Czy zadanie ma godzinę
+      EXISTS (SELECT 1 FROM files f WHERE f.file_task_id = t.task_id) AS has_files, -- Czy zadanie ma załączniki
+      t.task_group -- Grupa zadania
+    FROM tasks t
+    WHERE t.task_user_id = ? AND t.task_group = ?
     ORDER BY 
-      CASE task_priority 
+      t.task_completed ASC, -- Niewykonane zadania wyżej
+      CASE t.task_priority 
         WHEN 'high' THEN 1 
         ELSE 2 
       END, 
-      task_end_date ASC
+       t.task_end_date ASC, -- Zadania z wcześniejszymi datami wyżej
+      t.task_name ASC -- Sortowanie alfabetyczne w przypadku braku daty i priorytetu
   `;
   db.query(query, [userId, group], (err, results) => {
     if (err) {
