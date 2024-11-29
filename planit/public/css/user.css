@@ -1,0 +1,83 @@
+body {
+  padding-top: 30px; /* Dopasuj do wysokości navbaru */
+  padding-bottom: 30px;
+}
+
+.content {
+  margin-top: 56px; /* wysokość navbaru */
+  transition: margin-right 0.3s ease;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 6px 6px rgba(0, 0, 0, 0.1);
+}
+
+h2,
+h4 {
+  color: #343a40;
+  margin-bottom: 0.4rem;
+  border-bottom: 2px solid #9ec5fe;
+  padding-bottom: 0.5rem;
+}
+
+.card {
+  border: none;
+  box-shadow: 0 6px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.card h4 {
+  color: #495057;
+}
+
+.form-label {
+  font-weight: bold;
+  color: #495057;
+}
+
+.btn {
+  font-size: 16px;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: #fff;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+  color: white;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+}
+
+.text-center {
+  text-align: center;
+}
