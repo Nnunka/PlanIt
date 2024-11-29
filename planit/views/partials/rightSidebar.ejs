@@ -61,39 +61,34 @@
       </button>
     </form>
 
+    <!-- Sekcja Załączników -->
     <div class="mt-4">
       <h5>Załączniki</h5>
-      <ul id="file-list" class="list-group mb-3">
-        <!-- Files will be dynamically populated here -->
+      <ul id="file-list" class="section-list">
+        <!-- Elementy listy załączników będą dodawane dynamicznie -->
       </ul>
-
-      <form id="file-upload-form" enctype="multipart/form-data">
-        <input type="file" id="file-input" class="form-control mb-2" />
-        <button type="submit" class="btn btn-primary btn-sm">
-          Prześlij plik
-        </button>
+      <form id="file-upload-form" class="d-flex align-items-center">
+        <input type="file" id="file-input" class="form-control" required />
+        <button type="submit" class="btn btn-primary">Prześlij</button>
       </form>
     </div>
 
-    <!-- Sekcja dla podzadań -->
+    <!-- Sekcja Podzadań -->
     <div class="subtasks-section mt-4">
       <h5>Podzadania</h5>
-      <div id="subtasks-list" class="mb-3">
-        <!-- Lista podzadań generowana dynamicznie -->
-      </div>
-      <form id="add-subtask-form">
-        <div class="input-group">
-          <input
-            type="text"
-            id="new-subtask-name"
-            class="form-control"
-            placeholder="Dodaj nowe podzadanie"
-            required
-          />
-          <button class="btn btn-primary" type="submit">Dodaj</button>
-        </div>
+      <ul id="subtasks-list" class="section-list">
+        <!-- Elementy listy podzadań będą dodawane dynamicznie -->
+      </ul>
+      <form id="add-subtask-form" class="d-flex align-items-center">
+        <input
+          type="text"
+          id="new-subtask-name"
+          class="form-control"
+          placeholder="Dodaj nowe podzadanie"
+          required
+        />
+        <button type="submit" class="btn btn-primary">Dodaj</button>
       </form>
     </div>
-    <!-- Koniec sekcji podzadań -->
   </div>
 </div>

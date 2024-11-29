@@ -62,47 +62,44 @@ function formatDate(dateString) {
   return `${year}-${month}-${day}`;
 }
 
-// Funkcja do ładowania podzadań
 async function loadSubtasks(taskId) {
   try {
     const response = await fetch(`/tasks/${taskId}/subtasks`);
     const data = await response.json();
+
     const subtasksList = document.getElementById("subtasks-list");
-    subtasksList.innerHTML = ""; // Wyczyść listę podzadań
+    subtasksList.innerHTML = ""; // Wyczyść listę
 
     data.subtasks.forEach((subtask) => {
-      const subtaskItem = document.createElement("div");
-      subtaskItem.classList.add(
-        "subtask-item",
-        "d-flex",
-        "align-items-center",
-        "mb-2"
-      );
+      const listItem = document.createElement("li");
+      listItem.className = "section-list-item";
 
+      // Checkbox
       const checkbox = document.createElement("input");
       checkbox.type = "checkbox";
       checkbox.checked = subtask.subtask_completed === 1;
-      checkbox.classList.add("form-check-input", "me-2");
+      checkbox.classList.add("subtask-checkbox"); // Specjalna klasa dla mniejszego checkboxa
       checkbox.onchange = async () => {
         await updateSubtaskStatus(subtask.subtask_id, checkbox.checked ? 1 : 0);
-        showTasks(currentGroup); // Aktualizuj pasek postępu na stronie głównej
       };
 
+      // Nazwa podzadania
       const label = document.createElement("label");
       label.textContent = subtask.subtask_name;
-      label.classList.add("form-label", "flex-grow-1");
 
+      // Przycisk usuwania
       const deleteButton = document.createElement("button");
-      deleteButton.textContent = "Usuń";
-      deleteButton.classList.add("btn", "btn-danger", "btn-sm", "ms-2");
+      deleteButton.className = "section-delete-btn";
+      deleteButton.innerHTML = "&#10005;"; // Ikona "X"
       deleteButton.onclick = async () => {
-        await deleteSubtask(subtask.subtask_id, taskId);
+        await deleteSubtask(subtask.subtask_id);
       };
 
-      subtaskItem.appendChild(checkbox);
-      subtaskItem.appendChild(label);
-      subtaskItem.appendChild(deleteButton);
-      subtasksList.appendChild(subtaskItem);
+      // Dodaj elementy do listy
+      listItem.appendChild(checkbox);
+      listItem.appendChild(label); // Nazwa obok checkboxa
+      listItem.appendChild(deleteButton);
+      subtasksList.appendChild(listItem);
     });
   } catch (error) {
     console.error("Błąd ładowania podzadań:", error);
@@ -165,22 +162,33 @@ async function loadFilesForTask(taskId) {
     const data = await response.json();
 
     const fileList = document.getElementById("file-list");
-    fileList.innerHTML = ""; // Clear existing files
+    fileList.innerHTML = ""; // Wyczyść listę
 
     data.files.forEach((file) => {
       const listItem = document.createElement("li");
-      listItem.className =
-        "list-group-item d-flex justify-content-between align-items-center";
+      listItem.className = "section-list-item";
 
-      // Use the download route with the original file name
-      listItem.innerHTML = `
-        <a href="/files/${file.file_id}/download">${file.file_name}</a>
-        <button class="btn btn-danger btn-sm" onclick="deleteFile(${file.file_id})">Usuń</button>
-      `;
+      // Link do pliku
+      const fileLink = document.createElement("a");
+      fileLink.href = `/files/${file.file_id}/download`;
+      fileLink.textContent = file.file_name;
+      fileLink.classList.add("file-link");
+
+      // Przycisk usuwania
+      const deleteButton = document.createElement("button");
+      deleteButton.className = "section-delete-btn";
+      deleteButton.innerHTML = "&#10005;"; // Ikona "X"
+      deleteButton.onclick = async () => {
+        await deleteFile(file.file_id);
+      };
+
+      // Dodaj elementy do listy
+      listItem.appendChild(fileLink);
+      listItem.appendChild(deleteButton);
       fileList.appendChild(listItem);
     });
   } catch (error) {
-    console.error("Error loading files:", error);
+    console.error("Błąd ładowania załączników:", error);
   }
 }
 
