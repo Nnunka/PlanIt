@@ -59,7 +59,7 @@ router.get(
 );
 
 // Aktualizuje zadanie
-router.put("/task/:taskId", taskController.updateTask);
+router.put("/task/:taskId", authenticateToken, taskController.updateTask);
 
 // Dodawanie nowego zadania
 router.post("/task", authenticateToken, taskController.addTask);
