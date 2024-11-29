@@ -54,13 +54,22 @@ h5 {
   color: #007bff;
 }
 
-/* Styl dla przycisku Panel użytkownika */
+/* Styl dla przycisków na dole */
+#panel-buttons {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 60px;
+  gap: 10px; /* Odstęp między przyciskami */
+}
+
+/* Styl dla przycisku Kalendarz i Panel użytkownika */
+#calendar-panel-btn,
 #user-panel-btn {
   background-color: #007bff;
   color: white;
   border: none;
   border-radius: 4px;
-  margin-bottom: 50px;
   text-align: center;
   padding: 0.7rem 1rem;
   font-size: 1rem;
@@ -69,11 +78,13 @@ h5 {
   transition: background-color 0.3s ease;
 }
 
+#calendar-panel-btn:hover,
 #user-panel-btn:hover {
   background-color: #0056b3;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+#calendar-panel-btn:focus,
 #user-panel-btn:focus {
   outline: none;
   box-shadow: 0 0 0 3px rgba(38, 143, 255, 0.5); /* Obrys przy focus */

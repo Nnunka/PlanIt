@@ -6,6 +6,7 @@ const taskController = require("../controllers/taskController");
 const subtaskController = require("../controllers/subtaskController");
 const userController = require("../controllers/userController");
 const fileController = require("../controllers/fileController");
+const calendarController = require("../controllers/calendarController");
 const upload = require("../middleware/multer");
 
 ///// AUTHENTICATION ROUTES /////
@@ -152,6 +153,21 @@ router.put(
   "/tasks/:taskId/priority",
   authenticateToken,
   taskController.toggleTaskPriority
+);
+
+////// CALENDAR ROUTES //////
+
+// Obsługa trasy do renderowania widoku kalendarza
+router.get("/calendar", (req, res) => {
+  res.render("calendar");
+});
+
+// Obsługa trasy do pobierania danych dla kalendarza
+
+router.get(
+  "/api/tasks/calendar",
+  authenticateToken,
+  calendarController.getCalendarEvents
 );
 
 module.exports = router;

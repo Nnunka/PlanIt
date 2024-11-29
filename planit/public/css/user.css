@@ -15,10 +15,9 @@ body {
 
 h2,
 h4 {
-  color: #343a40;
-  margin-bottom: 0.4rem;
   border-bottom: 2px solid #9ec5fe;
-  padding-bottom: 0.5rem;
+  padding-bottom: 0.4rem;
+  margin-bottom: 0.4rem;
 }
 
 .card {
