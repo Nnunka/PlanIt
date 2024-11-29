@@ -166,14 +166,14 @@ h5 {
   display: flex;
   align-items: center; /* Wyśrodkowanie elementów w pionie */
   justify-content: space-between;
-  padding: 5px 8px;
+  padding: 5px 5px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  margin-bottom: 5px;
+  margin-bottom: 4px;
   background-color: #ffffff;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: background-color 0.3s ease;
-  font-size: 14px; /* Dopasowanie rozmiaru tekstu */
+  font-size: 16px; /* Dopasowanie rozmiaru tekstu */
 }
 
 .section-list-item:hover {

@@ -1,3 +1,4 @@
+/* Główny styl dla lewego sidebaru */
 .sidebar-left {
   width: 15%;
   height: 100vh;
@@ -9,31 +10,71 @@
   padding: 1rem;
   border-right: 1px solid #ddd; /* Subtelna ramka */
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05); /* Delikatny cień */
+  display: flex;
+  flex-direction: column; /* Ustawienie elementów w kolumnie */
+  justify-content: space-between; /* Odstęp między sekcją grup a panelem użytkownika */
 }
 
+/* Nagłówek sekcji */
 h5 {
   border-bottom: 2px solid #9ec5fe;
   padding-bottom: 0.5rem;
   margin-bottom: 1rem;
 }
 
+/* Styl dla listy grup */
+#task-groups-list {
+  flex-grow: 1; /* Grupy zajmują dostępne miejsce */
+  padding: 0;
+  margin: 0;
+  list-style: none; /* Usuń wypunktowanie */
+}
+
+/* Styl dla linków grup */
 #task-groups-list .nav-link {
   display: block;
-  color: #495057;
+  color: black;
   padding: 0.7rem 1rem;
   text-decoration: none;
   border-radius: 4px;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* Styl dla aktywnej grupy */
+#task-groups-list .nav-link.active {
+  background-color: #007bff; /* Kolor tła aktywnej grupy */
+  color: white; /* Kolor tekstu aktywnej grupy */
+  font-weight: bold; /* Podkreślenie aktywnej grupy */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtelny cień */
+}
+
+/* Hover efekt */
 #task-groups-list .nav-link:hover {
   background-color: #e9ecef;
   color: #007bff;
 }
 
-#task-groups-list .nav-link.active {
-  background-color: #007bff; /* Aktywny kolor */
+/* Styl dla przycisku Panel użytkownika */
+#user-panel-btn {
+  background-color: #007bff;
   color: white;
-  font-weight: bold;
+  border: none;
+  border-radius: 4px;
+  margin-bottom: 50px;
+  text-align: center;
+  padding: 0.7rem 1rem;
+  font-size: 1rem;
+  text-decoration: none;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
+}
+
+#user-panel-btn:hover {
+  background-color: #0056b3;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#user-panel-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(38, 143, 255, 0.5); /* Obrys przy focus */
 }
