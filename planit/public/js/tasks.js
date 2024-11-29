@@ -161,6 +161,15 @@ function createTaskElement(task, container) {
   const iconContainer = document.createElement("div");
   iconContainer.classList.add("d-flex", "align-items-center");
 
+  // Ikona opisu
+  if (task.has_description) {
+    const descriptionIcon = document.createElement("i");
+    descriptionIcon.classList.add("bi", "bi-pencil-square"); // Ikona Bootstrap
+    descriptionIcon.title = "Zadanie ma opis";
+    descriptionIcon.style.marginLeft = "5px";
+    iconContainer.appendChild(descriptionIcon);
+  }
+
   // Ikona daty
   if (task.has_date) {
     const dateIcon = document.createElement("i");

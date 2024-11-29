@@ -13,6 +13,7 @@ exports.getTaskName = (req, res) => {
       t.task_group,
       t.task_end_date IS NOT NULL AS has_date, 
       t.task_end_time IS NOT NULL AS has_time,
+      t.task_more IS NOT NULL AND t.task_more != '' AS has_description,
       (SELECT COUNT(*) FROM files f WHERE f.file_task_id = t.task_id) > 0 AS has_files
     FROM tasks t
     WHERE t.task_user_id = ?
@@ -178,6 +179,7 @@ exports.getTasksByGroup = (req, res) => {
       t.task_priority, 
       t.task_end_date IS NOT NULL AS has_date, -- Czy zadanie ma datę
       t.task_end_time IS NOT NULL AS has_time, -- Czy zadanie ma godzinę
+      t.task_more IS NOT NULL AND t.task_more != '' AS has_description,
       EXISTS (SELECT 1 FROM files f WHERE f.file_task_id = t.task_id) AS has_files, -- Czy zadanie ma załączniki
       t.task_group -- Grupa zadania
     FROM tasks t
@@ -214,6 +216,7 @@ exports.getTodayTasks = (req, res) => {
       t.task_group,
       t.task_end_date IS NOT NULL AS has_date,
       t.task_end_time IS NOT NULL AS has_time,
+      t.task_more IS NOT NULL AND t.task_more != '' AS has_description,
       EXISTS (SELECT 1 FROM files f WHERE f.file_task_id = t.task_id) AS has_files
     FROM tasks t
     WHERE t.task_user_id = ? 
