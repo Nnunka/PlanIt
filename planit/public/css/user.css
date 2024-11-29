@@ -3,11 +3,6 @@ body {
   padding-bottom: 30px;
 }
 
-.content {
-  margin-top: 56px; /* wysokość navbaru */
-  transition: margin-right 0.3s ease;
-}
-
 .container {
   max-width: 1000px;
   margin: 0 auto;
