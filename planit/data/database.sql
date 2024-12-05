@@ -27,12 +27,12 @@ CREATE TABLE `tasks` (
 
 CREATE TABLE `subtasks` (
   `subtask_id` int NOT NULL AUTO_INCREMENT,
-  `task_id` int NOT NULL,
+  `subtask_task_id` int NOT NULL,
   `subtask_name` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_polish_ci NOT NULL,
   `subtask_completed` tinyint(1) DEFAULT '0',
   PRIMARY KEY (`subtask_id`),
-  KEY `fk_subtask_task_id` (`task_id`),
-  CONSTRAINT `fk_subtask_task_id` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`task_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `fk_subtask_task_id` (`subtask_task_id`),
+  CONSTRAINT `fk_subtask_task_id` FOREIGN KEY (`subtask_task_id`) REFERENCES `tasks` (`task_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3
 
 CREATE TABLE `files` (

@@ -276,8 +276,8 @@ exports.getSubtaskProgress = (req, res) => {
 
   const query = `
       SELECT 
-        (SELECT COUNT(*) FROM subtasks WHERE task_id = ?) AS total_subtasks,
-        (SELECT COUNT(*) FROM subtasks WHERE task_id = ? AND subtask_completed = 1) AS completed_subtasks
+        (SELECT COUNT(*) FROM subtasks WHERE subtask_task_id = ?) AS total_subtasks,
+        (SELECT COUNT(*) FROM subtasks WHERE subtask_task_id = ? AND subtask_completed = 1) AS completed_subtasks
     `;
 
   db.query(query, [taskId, taskId], (err, results) => {

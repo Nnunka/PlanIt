@@ -4,7 +4,7 @@ const db = require("../config/db");
 exports.getSubtasks = (req, res) => {
   const taskId = req.params.taskId;
 
-  const query = "SELECT * FROM subtasks WHERE task_id = ?";
+  const query = "SELECT * FROM subtasks WHERE subtask_task_id = ?";
   db.query(query, [taskId], (err, results) => {
     if (err) {
       console.error("Błąd pobierania podzadań:", err);
@@ -25,7 +25,7 @@ exports.addSubtask = (req, res) => {
   }
 
   const query =
-    "INSERT INTO subtasks (task_id, subtask_name, subtask_completed) VALUES (?, ?, 0)";
+    "INSERT INTO subtasks (subtask_task_id, subtask_name, subtask_completed) VALUES (?, ?, 0)";
   db.query(query, [taskId, subtask_name], (err, result) => {
     if (err) {
       console.error("Błąd dodawania podzadania:", err);
