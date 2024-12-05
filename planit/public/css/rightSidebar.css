@@ -227,11 +227,3 @@ h5 {
 .input-group .form-control {
   border-left: none;
 }
-
-#task-end-time::-webkit-calendar-picker-indicator,
-#task-end-date::-webkit-calendar-picker-indicator {
-  display: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-}

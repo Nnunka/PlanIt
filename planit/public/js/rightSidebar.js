@@ -136,6 +136,7 @@ async function updateSubtaskStatus(subtaskId, completed) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ subtask_completed: completed }),
     });
+    showTasks(currentGroup);
   } catch (error) {
     console.error("Błąd aktualizacji statusu podzadania:", error);
   }
@@ -148,8 +149,8 @@ async function deleteSubtask(subtaskId) {
     });
 
     // Po usunięciu podzadania, odśwież listę podzadań i listę zadań
-    loadSubtasks(currentTaskId);
     showTasks(currentGroup);
+    loadSubtasks(currentTaskId);
   } catch (error) {
     console.error("Błąd usuwania podzadania:", error);
   }
