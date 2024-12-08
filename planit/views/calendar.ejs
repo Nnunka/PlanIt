@@ -156,20 +156,29 @@
             return { domNodes: [title] };
           },
           eventDidMount: function (info) {
+            // Przygotowanie treści tooltipa
+            let tooltipContent = info.event.title;
+            if (info.event.extendedProps.time) {
+              tooltipContent += ` (${info.event.extendedProps.time})`;
+            }
+
+            // Tworzenie tooltipa
             const tooltip = new bootstrap.Tooltip(info.el, {
-              title: info.event.title,
+              title: tooltipContent,
               placement: "top",
               trigger: "hover",
             });
+
+            // Wyróżnienie priorytetu
+            if (info.event.extendedProps.priority === "high") {
+              info.el.style.backgroundColor = "#e6d919"; // Żółte tło
+              info.el.style.borderColor = "#e6d919"; // Żółta ramka
+            }
           },
         });
 
         calendar.render();
       });
-
-      function showTaskDetailsAndRightSidebar(taskId) {
-        alert("Szczegóły zadania ID: " + taskId);
-      }
     </script>
   </body>
 </html>

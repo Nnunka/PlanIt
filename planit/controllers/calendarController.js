@@ -7,10 +7,11 @@ exports.getCalendarEvents = (req, res) => {
     SELECT 
       task_id AS id, 
       task_name AS title, 
-      DATE(task_end_date) AS start 
+      CONCAT(DATE(task_end_date), 'T', task_end_time) AS start,
+      task_priority AS priority,
+      task_end_time AS time
     FROM tasks
-    WHERE task_end_date IS NOT NULL
-      AND task_user_id = ?;  
+    WHERE task_user_id = ? AND task_end_date IS NOT NULL;
   `;
 
   db.query(query, [userId], (err, results) => {
