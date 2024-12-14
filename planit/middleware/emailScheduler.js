@@ -1,22 +1,20 @@
-// emailScheduler.js
-
+const db = require("../config/db");
 const cron = require("node-cron");
 const nodemailer = require("nodemailer");
-const db = require("../config/db");
 
 // Konfiguracja Nodemailer
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "PlanItReminder@gmail.com",
-    pass: "cytn gsvc nnar dpqk",
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
   },
 });
 
 // Funkcja do wysyłania e-maila
 const sendDeadlineReminder = (recipientEmail, subject, message) => {
   const mailOptions = {
-    from: "PlanItReminder@gmail.com", // Użyj poprawnego adresu
+    from: process.env.EMAIL_USER,
     to: recipientEmail,
     subject: subject,
     text: message,

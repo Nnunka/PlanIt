@@ -1,119 +1,100 @@
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
 const db = require("../config/db");
-const JWT_SECRET = process.env.JWT_SECRET;
+const { hashPassword, verifyPassword } = require("../middleware/hashPassword");
+const { generateAccessToken } = require("../middleware/auth");
 
-exports.register = (req, res) => {
+// Rejestracja użytkownika
+exports.register = async (req, res) => {
   const { login, password, email, name, surname } = req.body;
 
   if (!login || !password || !email || !name || !surname) {
     return res.status(400).json({ error: "Wszystkie pola są wymagane." });
   }
 
-  //spr czy login jest już zajęty
-  const checkLoginQuery = "SELECT user_login FROM users WHERE user_login = ?";
-  db.query(checkLoginQuery, [login], (err, loginResults) => {
-    if (err) {
-      console.error("Błąd podczas sprawdzania loginu:", err);
-      return res.status(500).json({ error: "Wystąpił błąd serwera." });
-    }
+  try {
+    // Sprawdzenie, czy login jest już zajęty
+    const [loginResults] = await db
+      .promise()
+      .query("SELECT user_login FROM users WHERE user_login = ?", [login]);
 
     if (loginResults.length > 0) {
       return res.status(400).json({ error: "Ten login jest już zajęty." });
     }
 
-    //spr czy e-mail jest już zajęty
-    const checkEmailQuery = "SELECT user_email FROM users WHERE user_email = ?";
-    db.query(checkEmailQuery, [email], (err, emailResults) => {
-      if (err) {
-        console.error("Błąd podczas sprawdzania e-maila:", err);
-        return res.status(500).json({ error: "Wystąpił błąd serwera." });
-      }
+    // Sprawdzenie, czy e-mail jest już zajęty
+    const [emailResults] = await db
+      .promise()
+      .query("SELECT user_email FROM users WHERE user_email = ?", [email]);
 
-      if (emailResults.length > 0) {
-        return res
-          .status(400)
-          .json({ error: "Ten adres e-mail jest już zajęty." });
-      }
+    if (emailResults.length > 0) {
+      return res
+        .status(400)
+        .json({ error: "Ten adres e-mail jest już zajęty." });
+    }
 
-      bcrypt.hash(password, 10, (err, hash) => {
-        if (err) {
-          console.error("Błąd podczas hashowania hasła:", err);
-          return res
-            .status(500)
-            .json({ error: "Wystąpił błąd serwera podczas hashowania hasła." });
-        }
+    // Hashowanie hasła za pomocą funkcji z hashPassword.js
+    const hashedPassword = await hashPassword(password);
 
-        const insertUserQuery =
-          "INSERT INTO users (user_login, user_password, user_email, user_name, user_surname) VALUES (?, ?, ?, ?, ?)";
-        db.query(
-          insertUserQuery,
-          [login, hash, email, name, surname],
-          (err, results) => {
-            if (err) {
-              console.error("Błąd podczas rejestracji użytkownika:", err);
-              return res.status(500).json({
-                error: "Wystąpił błąd serwera podczas rejestracji użytkownika.",
-              });
-            }
+    // Wstawienie użytkownika do bazy danych
+    await db
+      .promise()
+      .query(
+        "INSERT INTO users (user_login, user_password, user_email, user_name, user_surname) VALUES (?, ?, ?, ?, ?)",
+        [login, hashedPassword, email, name, surname]
+      );
 
-            console.log("Zarejestrowano nowego użytkownika:", req.body);
-            res
-              .status(200)
-              .json({ success: true, message: "Rejestracja udana." });
-          }
-        );
-      });
+    console.log("Zarejestrowano nowego użytkownika:", login);
+    res.status(201).json({ success: true, message: "Rejestracja udana." });
+  } catch (error) {
+    console.error("Błąd podczas rejestracji użytkownika:", error);
+    res.status(500).json({
+      error: "Wystąpił błąd serwera podczas rejestracji użytkownika.",
     });
-  });
+  }
 };
 
-exports.login = (req, res) => {
+// Logowanie użytkownika
+exports.login = async (req, res) => {
   const { login, password } = req.body;
-  const query = "SELECT * FROM users WHERE user_login = ?";
 
-  db.query(query, [login], (err, results) => {
-    if (err) {
-      console.error("Błąd podczas logowania:", err);
-      return res.status(500).json({ error: "Wystąpił błąd serwera." });
+  try {
+    // Sprawdzenie, czy użytkownik istnieje
+    const [results] = await db
+      .promise()
+      .query("SELECT * FROM users WHERE user_login = ?", [login]);
+
+    if (results.length === 0) {
+      return res.status(400).json({ error: "Nieprawidłowy login lub hasło." });
     }
 
-    if (results.length > 0) {
-      const user = results[0];
+    const user = results[0];
 
-      bcrypt.compare(password, user.user_password, (err, isMatch) => {
-        if (err) {
-          console.error("Błąd podczas porównywania haseł:", err);
-          return res.status(500).json({ error: "Wystąpił błąd serwera." });
-        }
+    // Porównanie hasła użytkownika z zahashowanym hasłem w bazie danych za pomocą verifyPassword
+    const isMatch = await verifyPassword(password, user.user_password);
 
-        if (isMatch) {
-          const token = jwt.sign(
-            { id: user.user_id, login: user.user_login },
-            JWT_SECRET,
-            { expiresIn: "1h" }
-          );
-
-          res.cookie("token", token, {
-            httpOnly: true,
-            secure: false,
-            sameSite: "strict",
-            maxAge: 3600000,
-          });
-
-          console.log("Zalogowano użytkownika:", req.body);
-
-          res.status(200).json({ success: true, message: "Logowanie udane." });
-        } else {
-          res.status(400).json({ error: "Nieprawidłowy login lub hasło." });
-        }
-      });
-    } else {
-      res.status(400).json({ error: "Nieprawidłowy login lub hasło." });
+    if (!isMatch) {
+      return res.status(400).json({ error: "Nieprawidłowy login lub hasło." });
     }
-  });
+
+    // Generowanie tokenu JWT za pomocą funkcji z authUtils.js
+    const token = generateAccessToken(user);
+
+    // Ustawienie ciasteczka z tokenem
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 3600000, // 1 godzina
+    });
+
+    console.log("Zalogowano użytkownika:", login);
+    res.status(200).json({ success: true, message: "Logowanie udane." });
+  } catch (error) {
+    console.error("Błąd podczas logowania:", error);
+    res.status(500).json({ error: "Wystąpił błąd serwera." });
+  }
 };
 
+// Wylogowanie użytkownika
 exports.logout = (req, res) => {
   try {
     res.clearCookie("token");

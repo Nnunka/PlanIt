@@ -1,5 +1,8 @@
 const express = require("express");
-const authenticateToken = require("../middleware/auth");
+const {
+  authenticateToken,
+  generateAccessToken,
+} = require("../middleware/auth");
 const router = express.Router();
 const authController = require("../controllers/authController");
 const taskController = require("../controllers/taskController");
@@ -158,7 +161,7 @@ router.put(
 ////// CALENDAR ROUTES //////
 
 // Obsługa trasy do renderowania widoku kalendarza
-router.get("/calendar", (req, res) => {
+router.get("/calendar", authenticateToken, (req, res) => {
   res.render("calendar");
 });
 
