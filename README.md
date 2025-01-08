@@ -14,12 +14,14 @@ Zainstaluj zależności:
 
 W katalogu głównym projektu stwórz plik .env i umieść w nim te dane:
 
-    PORT=3000
+    PORT=5000
     DB_HOST=localhost
     DB_USER=root
     DB_PASSWORD=4925
     DB_NAME=planit
     JWT_SECRET=twój_tajny_klucz_jwt
+    EMAIL_USER=PlanItReminder@gmail.com
+    EMAIL_PASS=cytn gsvc nnar dpqk
 
 ## Tryb deweloperski (z automatycznym restartem serwera):
 
@@ -39,4 +41,4 @@ Uruchom aplikację bez narzędzi deweloperskich:
 
 Otwórz przeglądarkę pod adresem:
 
-    http://localhost:3000
+    http://localhost:5000
